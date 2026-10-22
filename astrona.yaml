@@ -1,0 +1,329 @@
+# Course manifest for ATS105 - Enterprise Operations, High Availability & Helm (Harbor).
+#
+# One entry per section under `modules:`. Each section lists, in order: its
+# README, then for each module the landing page (course.md), its parts
+# (course-0N-*.md), and right after the part a lab tests, the lab's
+# question.md reading and the `type: lab` entry. The module's summary page
+# comes last. The section capstone closes the section. Playgrounds are not
+# listed: the landing page's playground marker shows them. solution.md is
+# never listed.
+#
+# Every `path:` is relative to this file.
+
+training:
+  id: ATS105
+  title: "Harbor: Enterprise Operations, High Availability & Helm"
+  maturity: draft
+  description: >
+    Training material covering the Enterprise Operations, High Availability &
+    Helm domain of the Harbor training path: running Harbor with the
+    harbor-helm chart on external PostgreSQL, Redis and S3-compatible object
+    storage, scaling every component to more than one replica, backing Harbor
+    up and restoring it after a disaster, upgrading the chart, and moving the
+    database to a new server with a read-only window and garbage collection.
+    Each module pairs a layered reader with an ungraded hands-on playground
+    and a graded practice lab. Each section closes with an integration
+    capstone. Written for Harbor 2.15.4 and the harbor-helm chart 1.19.4.
+
+  certification:
+    name: Harbor
+    code: HARBOR
+    provider: Astrona
+    domain: Enterprise Operations, High Availability & Helm
+    weight: 15
+
+modules:
+
+  - id: module-intro
+    title: "Introduction"
+    description: >
+      Start here. What this course trains you to do, how it is laid out, how
+      to get your machine ready with the astrona command-line tool, how the
+      content is written and checked, who maintains it, and how to report a
+      mistake.
+
+    content:
+      - type: reading
+        title: Introduction
+        path: sections/intro/README.md
+      - type: reading
+        title: "Welcome To The Course"
+        path: sections/intro/course-01-welcome.md
+      - type: reading
+        title: "Get Your Machine Ready"
+        path: sections/intro/course-02-get-your-machine-ready.md
+      - type: reading
+        title: "How This Course Is Made"
+        path: sections/intro/course-03-how-this-course-is-made.md
+
+  - id: module-010
+    title: "Harbor On External Services"
+    description: >
+      Which component keeps which data, and how to point the harbor-helm
+      chart at an external PostgreSQL, an external Redis and S3-compatible
+      object storage, with credentials read from Kubernetes Secrets and job
+      logs in the database.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-010/README.md
+
+      - type: reading
+        title: "Run Harbor On External Services"
+        path: sections/section-010/module-01/course.md
+      - type: reading
+        title: "What Harbor Keeps Where"
+        path: sections/section-010/module-01/course-01-what-harbor-keeps-where.md
+      - type: reading
+        title: "External PostgreSQL And Redis"
+        path: sections/section-010/module-01/course-02-external-postgresql-and-redis.md
+      - type: reading
+        title: "Object Storage For Images And Job Logs"
+        path: sections/section-010/module-01/course-03-object-storage-and-job-logs.md
+      - type: reading
+        title: Question
+        path: sections/section-010/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Move Harbor To External PostgreSQL, Redis And S3 Lab"
+        path: sections/section-010/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: external-services
+        task_kind: migration
+        tags: [harbor-helm, values-yaml, external-database, external-redis, s3, kubernetes-secret, job-logger]
+        learning_goals:
+          - Point the harbor-helm chart at an external PostgreSQL, Redis and S3 store
+          - Read every credential from a Kubernetes Secret instead of the Helm values
+          - Prove the move with a push, a pull, Harbor's tables in PostgreSQL and blobs in the bucket
+        resources:
+          - name: "Deploying Harbor with high availability via Helm"
+            url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: reading
+        title: Summary
+        path: sections/section-010/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-010/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Repair A Harbor That Cannot Reach Its Services Capstone"
+        path: sections/section-010/capstone/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 45m
+        topic: external-services
+        task_kind: troubleshooting
+        tags: [harbor-helm, external-database, external-redis, object-storage, kubernetes-secret, health]
+        learning_goals:
+          - Find from pod logs and the health endpoint why Harbor cannot reach its database, Redis and bucket
+          - Fix the Secret and the Helm values without writing credentials into the values
+          - Prove the fix with healthy components and an artifact stored in the bucket harbor
+        resources:
+          - name: "Deploying Harbor with high availability via Helm"
+            url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+
+  - id: module-020
+    title: "High Availability"
+    description: >
+      What a highly available Harbor needs, which state must be shared
+      between replicas, scaling portal, core, jobservice and registry, and
+      proving that pushes and pulls survive the loss of a pod. The archived
+      Harbor Operator is explained as history.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-020/README.md
+
+      - type: reading
+        title: "Run Harbor With High Availability"
+        path: sections/section-020/module-01/course.md
+      - type: reading
+        title: "What High Availability Needs"
+        path: sections/section-020/module-01/course-01-what-high-availability-needs.md
+      - type: reading
+        title: "Scaling The Components And Proving It"
+        path: sections/section-020/module-01/course-02-scaling-the-components.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Scale Harbor To Two Replicas Per Component Lab"
+        path: sections/section-020/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: high-availability
+        task_kind: build
+        tags: [harbor-helm, replicas, job-logger, shared-storage, health]
+        learning_goals:
+          - Scale portal, core, jobservice and registry to two replicas each
+          - Move job logs to the database so every jobservice replica can read them
+          - Prove that pushes and pulls keep working while a core and a registry pod are replaced
+        resources:
+          - name: "Deploying Harbor with high availability via Helm"
+            url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
+      - type: reading
+        title: Summary
+        path: sections/section-020/module-01/course-03-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-020/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Make A Scaled Harbor Consistent Capstone"
+        path: sections/section-020/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 45m
+        topic: high-availability
+        task_kind: troubleshooting
+        tags: [replicas, shared-storage, object-storage, job-logger, harbor-helm]
+        learning_goals:
+          - Explain why registry replicas on separate filesystems lose artifacts at random
+          - Move the registry to shared object storage and finish scaling every component
+          - Prove that every read of a freshly pushed artifact succeeds
+        resources:
+          - name: "Deploying Harbor with high availability via Helm"
+            url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+
+  - id: module-030
+    title: "Backup And Restore"
+    description: >
+      What a Harbor backup must contain (the database, the image storage,
+      the TLS certificate, secretKey and the Helm values), and a full restore
+      drill after a simulated disaster.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-030/README.md
+
+      - type: reading
+        title: "Back Up And Restore Harbor"
+        path: sections/section-030/module-01/course.md
+      - type: reading
+        title: "What To Back Up"
+        path: sections/section-030/module-01/course-01-what-to-back-up.md
+      - type: reading
+        title: "A Restore Drill"
+        path: sections/section-030/module-01/course-02-a-restore-drill.md
+      - type: reading
+        title: Question
+        path: sections/section-030/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Back Up Harbor And Restore It After A Disaster Lab"
+        path: sections/section-030/module-01/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 40m
+        topic: backup-restore
+        task_kind: migration
+        tags: [pg-dump, pg-restore, bucket-sync, secret-key, tls-certificate, restore-drill]
+        learning_goals:
+          - Back up Harbor's database, image storage, certificate, secretKey and Helm values
+          - Restore Harbor after its release, database and bucket are deleted
+          - Prove the restore with the original digest of inventory/podinfo:6.15.0
+        resources:
+          - name: "Upgrading Harbor deployed with Helm (backup step)"
+            url: https://goharbor.io/docs/2.15.0/administration/upgrade/helm-upgrade/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: reading
+        title: Summary
+        path: sections/section-030/module-01/course-03-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-030/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Finish A Hurried Restore Capstone"
+        path: sections/section-030/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 45m
+        topic: backup-restore
+        task_kind: troubleshooting
+        tags: [secret-key, tls-certificate, bucket-sync, registry-endpoint, restore-drill, health]
+        learning_goals:
+          - Find what a restore left out from certificate errors, failed pulls and a registry endpoint that cannot sign in
+          - Bring back the original certificate, secretKey and image storage
+          - Prove the restore with a working registry endpoint and the original digest
+        resources:
+          - name: "Upgrading Harbor deployed with Helm (certificates)"
+            url: https://goharbor.io/docs/2.15.0/administration/upgrade/helm-upgrade/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+
+  - id: module-040
+    title: "Upgrades And Database Migration"
+    description: >
+      Upgrading Harbor with the chart (and why there is no rollback), moving
+      the database to a new PostgreSQL server inside a read-only window, and
+      garbage collection to free storage after deletions.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-040/README.md
+
+      - type: reading
+        title: "Upgrade Harbor And Move Its Database"
+        path: sections/section-040/module-01/course.md
+      - type: reading
+        title: "Upgrading The Chart"
+        path: sections/section-040/module-01/course-01-upgrading-the-chart.md
+      - type: reading
+        title: "Moving The Database With A Read-Only Window"
+        path: sections/section-040/module-01/course-02-moving-the-database.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Upgrade Harbor And Move Its Database Lab"
+        path: sections/section-040/module-01/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 40m
+        topic: upgrades
+        task_kind: migration
+        tags: [chart-upgrade, schema-migration, read-only-mode, database-migration, pg-dump, pg-restore]
+        learning_goals:
+          - Put Harbor in read-only mode and copy its database to a new PostgreSQL server
+          - Upgrade the chart from 1.19.2 to 1.19.4 while pointing Harbor at the new server
+          - Prove the move with the data on the new server, a pull, and Harbor writable again
+        resources:
+          - name: "Upgrading Harbor deployed with Helm"
+            url: https://goharbor.io/docs/2.15.0/administration/upgrade/helm-upgrade/
+          - name: "Configure global settings (read-only mode)"
+            url: https://goharbor.io/docs/2.15.0/administration/general-settings/
+      - type: reading
+        title: "Garbage Collection After The Change"
+        path: sections/section-040/module-01/course-03-garbage-collection.md
+      - type: reading
+        title: Summary
+        path: sections/section-040/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-040/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Finish A Half-Done Database Move Capstone"
+        path: sections/section-040/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 45m
+        topic: upgrades
+        task_kind: migration
+        tags: [database-migration, read-only-mode, pg-dump, pg-restore, garbage-collection, health]
+        learning_goals:
+          - Find that a copy of the database on the new server is older than the live one
+          - Finish the move with a fresh copy inside a read-only window and leave Harbor writable
+          - Delete an old repository and run garbage collection to free its storage
+        resources:
+          - name: "Garbage collection"
+            url: https://goharbor.io/docs/2.15.0/administration/garbage-collection/
+          - name: "Configure global settings (read-only mode)"
+            url: https://goharbor.io/docs/2.15.0/administration/general-settings/
+          - name: "Upgrading Harbor deployed with Helm"
+            url: https://goharbor.io/docs/2.15.0/administration/upgrade/helm-upgrade/

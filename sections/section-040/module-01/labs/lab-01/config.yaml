@@ -1,0 +1,55 @@
+# Upgrade Harbor And Move Its Database
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-105-lab-040-01"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+
+bootstrap:
+  init:
+    - name: "install-harbor"
+      description: "Installs Helm 3.22.1, the external services, Harbor (chart 1.19.2) and the workstation pod"
+      type: "file"
+      source: "bootstrap/01-install-harbor.sh"
+    - name: "ats-105-lab-040-01-setup"
+      description: "Starts Harbor 2.15.2 (chart 1.19.2) on postgres with inventory/podinfo:6.15.0 and an empty postgres-new"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+
+testing:
+  init:
+    - name: "wait-for-harbor"
+      description: "Waits until Harbor answers before the reference solution runs"
+      type: "file"
+      source: "testing/wait-for-harbor.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+
+validation:
+  scripts:
+    - name: "validate-chart-version"
+      description: "Confirms Harbor runs chart 1.19.4"
+      type: "file"
+      source: "validation/validate-chart-version.sh"
+    - name: "validate-new-database"
+      description: "Confirms Harbor uses postgres-new with the moved data"
+      type: "file"
+      source: "validation/validate-new-database.sh"
+    - name: "validate-read-write"
+      description: "Confirms Harbor is out of read-only mode"
+      type: "file"
+      source: "validation/validate-read-write.sh"
+    - name: "validate-artifact"
+      description: "Confirms inventory/podinfo:6.15.0 still pulls"
+      type: "file"
+      source: "validation/validate-artifact.sh"
+
+teardown:
+  keepCluster: false

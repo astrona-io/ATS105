@@ -1,0 +1,55 @@
+# Move Harbor To External PostgreSQL, Redis And S3
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-105-lab-010-01"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+
+bootstrap:
+  init:
+    - name: "install-harbor"
+      description: "Installs Helm 3.22.1, the external services, Harbor (chart 1.19.4) and the workstation pod"
+      type: "file"
+      source: "bootstrap/01-install-harbor.sh"
+    - name: "ats-105-lab-010-01-setup"
+      description: "Starts Harbor on its internal services and leaves the external services empty"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+
+testing:
+  init:
+    - name: "wait-for-harbor"
+      description: "Waits until Harbor answers before the reference solution runs"
+      type: "file"
+      source: "testing/wait-for-harbor.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+
+validation:
+  scripts:
+    - name: "validate-external-values"
+      description: "Confirms Harbor's Helm values point at the external services and take credentials from Secrets"
+      type: "file"
+      source: "validation/validate-external-values.sh"
+    - name: "validate-harbor-healthy"
+      description: "Confirms every Harbor component reports healthy"
+      type: "file"
+      source: "validation/validate-harbor-healthy.sh"
+    - name: "validate-push-pull-s3"
+      description: "Confirms an artifact pushes and pulls and its data lands in the bucket harbor"
+      type: "file"
+      source: "validation/validate-push-pull-s3.sh"
+    - name: "validate-database-tables"
+      description: "Confirms Harbor's tables live in the external PostgreSQL"
+      type: "file"
+      source: "validation/validate-database-tables.sh"
+
+teardown:
+  keepCluster: false

@@ -1,0 +1,55 @@
+# Back Up Harbor And Restore It After A Disaster
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-105-lab-030-01"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+
+bootstrap:
+  init:
+    - name: "install-harbor"
+      description: "Installs Helm 3.22.1, the external services, Harbor (chart 1.19.4) and the workstation pod"
+      type: "file"
+      source: "bootstrap/01-install-harbor.sh"
+    - name: "ats-105-lab-030-01-setup"
+      description: "Starts Harbor on the external services with the project inventory and inventory/podinfo:6.15.0"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+
+testing:
+  init:
+    - name: "wait-for-harbor"
+      description: "Waits until Harbor answers before the reference solution runs"
+      type: "file"
+      source: "testing/wait-for-harbor.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+
+validation:
+  scripts:
+    - name: "validate-real-restore"
+      description: "Confirms the database was dropped and restored and Harbor was installed again"
+      type: "file"
+      source: "validation/validate-real-restore.sh"
+    - name: "validate-artifact-restored"
+      description: "Confirms inventory/podinfo:6.15.0 pulls with its original digest"
+      type: "file"
+      source: "validation/validate-artifact-restored.sh"
+    - name: "validate-secretkey"
+      description: "Confirms Harbor uses the original secretKey"
+      type: "file"
+      source: "validation/validate-secretkey.sh"
+    - name: "validate-harbor-healthy"
+      description: "Confirms every Harbor component reports healthy"
+      type: "file"
+      source: "validation/validate-harbor-healthy.sh"
+
+teardown:
+  keepCluster: false

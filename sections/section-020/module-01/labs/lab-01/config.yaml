@@ -1,0 +1,55 @@
+# Scale Harbor To Two Replicas Per Component
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-105-lab-020-01"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+
+bootstrap:
+  init:
+    - name: "install-harbor"
+      description: "Installs Helm 3.22.1, the external services, Harbor (chart 1.19.4) and the workstation pod"
+      type: "file"
+      source: "bootstrap/01-install-harbor.sh"
+    - name: "ats-105-lab-020-01-setup"
+      description: "Starts Harbor on the external services with one replica per component and file job logs"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+
+testing:
+  init:
+    - name: "wait-for-harbor"
+      description: "Waits until Harbor answers before the reference solution runs"
+      type: "file"
+      source: "testing/wait-for-harbor.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+
+validation:
+  scripts:
+    - name: "validate-replicas"
+      description: "Confirms portal, core, jobservice and registry run at least 2 ready replicas"
+      type: "file"
+      source: "validation/validate-replicas.sh"
+    - name: "validate-joblogger"
+      description: "Confirms jobservice writes job logs to the database"
+      type: "file"
+      source: "validation/validate-joblogger.sh"
+    - name: "validate-harbor-healthy"
+      description: "Confirms every Harbor component reports healthy"
+      type: "file"
+      source: "validation/validate-harbor-healthy.sh"
+    - name: "validate-survives-pod-loss"
+      description: "Confirms pushes and pulls keep working while a core and a registry pod are replaced"
+      type: "file"
+      source: "validation/validate-survives-pod-loss.sh"
+
+teardown:
+  keepCluster: false

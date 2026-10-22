@@ -1,0 +1,55 @@
+# Finish A Half-Done Database Move
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-105-capstone-040"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+
+bootstrap:
+  init:
+    - name: "install-harbor"
+      description: "Installs Helm 3.22.1, the external services, Harbor (chart 1.19.4) and the workstation pod"
+      type: "file"
+      source: "bootstrap/01-install-harbor.sh"
+    - name: "ats-105-capstone-040-setup"
+      description: "Starts Harbor on postgres, leaves a stale copy on postgres-new and Harbor in read-only mode"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+
+testing:
+  init:
+    - name: "wait-for-harbor"
+      description: "Waits until Harbor answers before the reference solution runs"
+      type: "file"
+      source: "testing/wait-for-harbor.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+
+validation:
+  scripts:
+    - name: "validate-new-database"
+      description: "Confirms Harbor uses postgres-new with the latest data"
+      type: "file"
+      source: "validation/validate-new-database.sh"
+    - name: "validate-read-write"
+      description: "Confirms Harbor is out of read-only mode"
+      type: "file"
+      source: "validation/validate-read-write.sh"
+    - name: "validate-garbage-collected"
+      description: "Confirms builds/old-builds is deleted and garbage collection ran"
+      type: "file"
+      source: "validation/validate-garbage-collected.sh"
+    - name: "validate-harbor-healthy"
+      description: "Confirms every Harbor component reports healthy"
+      type: "file"
+      source: "validation/validate-harbor-healthy.sh"
+
+teardown:
+  keepCluster: false

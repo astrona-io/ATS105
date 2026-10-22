@@ -1,0 +1,261 @@
+# External services for Harbor: PostgreSQL, Redis and S3-compatible storage.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: harbor-deps
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: harbor-deps
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          # PostgreSQL 15, the same major version as Harbor 2.15's own harbor-db image.
+          image: postgres:15.19-alpine
+          env:
+            - name: POSTGRES_USER
+              value: harbor
+            - name: POSTGRES_PASSWORD
+              value: harbor-db-password
+            - name: POSTGRES_DB
+              value: registry
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - name: postgres
+              containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "harbor", "-d", "registry"]
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+            - name: backup
+              mountPath: /backup
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: backup
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: harbor-deps
+spec:
+  selector:
+    app: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: harbor-deps
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.4.11-alpine
+          ports:
+            - name: redis
+              containerPort: 6379
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: harbor-deps
+spec:
+  selector:
+    app: redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+---
+# An S3-compatible object store (versitygw with a posix backend on an emptyDir)
+# and a client pod with the AWS command-line tool. Lab-only key pair
+# harbor-s3 / harbor-s3-secret.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: versitygw
+  namespace: harbor-deps
+  labels:
+    app: versitygw
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: versitygw
+  template:
+    metadata:
+      labels:
+        app: versitygw
+    spec:
+      containers:
+        - name: versitygw
+          image: versity/versitygw:v1.9.0
+          args: ["--port", ":9000", "posix", "/data"]
+          env:
+            - name: ROOT_ACCESS_KEY
+              value: harbor-s3
+            - name: ROOT_SECRET_KEY
+              value: harbor-s3-secret
+          ports:
+            - name: s3
+              containerPort: 9000
+          readinessProbe:
+            tcpSocket:
+              port: s3
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3
+  namespace: harbor-deps
+spec:
+  selector:
+    app: versitygw
+  ports:
+    - name: s3
+      port: 9000
+      targetPort: s3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3-client
+  namespace: harbor-deps
+  labels:
+    app: s3-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: s3-client
+  template:
+    metadata:
+      labels:
+        app: s3-client
+    spec:
+      containers:
+        - name: aws
+          image: amazon/aws-cli:2.38.4
+          command: ["sh", "-c", "aws configure set default.s3.addressing_style path && while true; do sleep 30; done"]
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: harbor-s3
+            - name: AWS_SECRET_ACCESS_KEY
+              value: harbor-s3-secret
+            - name: AWS_DEFAULT_REGION
+              value: us-east-1
+            - name: AWS_ENDPOINT_URL
+              value: http://s3.harbor-deps.svc.cluster.local:9000
+---
+# A second registry (CNCF Distribution) with basic authentication. Harbor
+# keeps its password encrypted with secretKey. Lab-only user mirror /
+# mirror-password.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mirror-htpasswd
+  namespace: harbor-deps
+type: Opaque
+stringData:
+  htpasswd: "mirror:$2y$05$AC4ELnFUsTGcunsg/QbpT.KRE3Tcwiaew.vWa/b9NUFE6Nei4iNEy"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mirror
+  namespace: harbor-deps
+  labels:
+    app: mirror
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mirror
+  template:
+    metadata:
+      labels:
+        app: mirror
+    spec:
+      containers:
+        - name: registry
+          image: registry:3.1.2
+          env:
+            - name: REGISTRY_AUTH
+              value: htpasswd
+            - name: REGISTRY_AUTH_HTPASSWD_REALM
+              value: mirror
+            - name: REGISTRY_AUTH_HTPASSWD_PATH
+              value: /auth/htpasswd
+          ports:
+            - name: registry
+              containerPort: 5000
+          volumeMounts:
+            - name: auth
+              mountPath: /auth
+      volumes:
+        - name: auth
+          secret:
+            secretName: mirror-htpasswd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mirror
+  namespace: harbor-deps
+spec:
+  selector:
+    app: mirror
+  ports:
+    - name: registry
+      port: 5000
+      targetPort: registry

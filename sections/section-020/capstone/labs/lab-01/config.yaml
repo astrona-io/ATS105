@@ -1,0 +1,55 @@
+# Make A Scaled Harbor Consistent
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-105-capstone-020"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+
+bootstrap:
+  init:
+    - name: "install-harbor"
+      description: "Installs Helm 3.22.1, the external services, Harbor (chart 1.19.4) and the workstation pod"
+      type: "file"
+      source: "bootstrap/01-install-harbor.sh"
+    - name: "ats-105-capstone-020-setup"
+      description: "Installs Harbor with two registry replicas on separate filesystems, one core replica and file job logs"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+
+testing:
+  init:
+    - name: "wait-for-harbor"
+      description: "Waits until Harbor answers before the reference solution runs"
+      type: "file"
+      source: "testing/wait-for-harbor.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+
+validation:
+  scripts:
+    - name: "validate-replicas"
+      description: "Confirms portal, core, jobservice and registry run at least 2 ready replicas"
+      type: "file"
+      source: "validation/validate-replicas.sh"
+    - name: "validate-shared-storage"
+      description: "Confirms the registry stores image data in the bucket harbor"
+      type: "file"
+      source: "validation/validate-shared-storage.sh"
+    - name: "validate-joblogger"
+      description: "Confirms jobservice writes job logs to the database"
+      type: "file"
+      source: "validation/validate-joblogger.sh"
+    - name: "validate-consistent-reads"
+      description: "Confirms every read of a freshly pushed artifact succeeds"
+      type: "file"
+      source: "validation/validate-consistent-reads.sh"
+
+teardown:
+  keepCluster: false

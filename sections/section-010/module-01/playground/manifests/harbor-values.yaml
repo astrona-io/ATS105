@@ -1,0 +1,27 @@
+# Helm values for Harbor (chart harbor-helm) in this environment.
+# One address everywhere: https://harbor.localtest.me:8443.
+expose:
+  type: clusterIP
+  tls:
+    enabled: true
+    certSource: secret
+    secret:
+      secretName: harbor-tls
+  clusterIP:
+    name: harbor
+    ports:
+      httpPort: 8080
+      httpsPort: 8443
+externalURL: https://harbor.localtest.me:8443
+# Lets Harbor serve the CA at /api/v2.0/systeminfo/getcert.
+caSecretName: harbor-tls
+# Lab-only administrator password. A real installation sets its own.
+harborAdminPassword: Harbor12345
+# The key Harbor uses to encrypt stored secrets. Back it up with the database.
+existingSecretSecretKey: harbor-secretkey
+persistence:
+  enabled: false
+trivy:
+  enabled: false
+metrics:
+  enabled: false

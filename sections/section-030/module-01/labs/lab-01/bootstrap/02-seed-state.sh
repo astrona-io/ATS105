@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# Creates the starting state for ats-105-lab-030-01.
+#
+# The fixed state is NOT created here; producing it is the task.
+set -euo pipefail
+
+HARBOR_URL="https://harbor.localtest.me:8443"
+for dir in /usr/local/bin "$HOME/.local/bin"; do
+  [ -d "$dir" ] && PATH="$dir:$PATH"
+done
+export PATH
+
+ws() {
+  # ws COMMAND...: runs a command in the workstation pod.
+  kubectl -n workstation exec -i deploy/workstation -- "$@"
+}
+harbor_api() {
+  # harbor_api METHOD PATH [JSON]: calls the Harbor REST API v2.0 as admin.
+  local method="$1" path="$2" body="${3:-}"
+  if [ -n "$body" ]; then
+    printf '%s' "$body" | ws curl -sS -u admin:Harbor12345 -X "$method" \
+      -H 'Content-Type: application/json' --data-binary @- "$HARBOR_URL/api/v2.0$path"
+  else
+    ws curl -sS -u admin:Harbor12345 -X "$method" "$HARBOR_URL/api/v2.0$path"
+  fi
+}
+harbor_status() {
+  # harbor_status METHOD PATH [JSON]: prints only the HTTP status code.
+  local method="$1" path="$2" body="${3:-}"
+  if [ -n "$body" ]; then
+    printf '%s' "$body" | ws curl -s -o /dev/null -w '%{http_code}' -u admin:Harbor12345 -X "$method" \
+      -H 'Content-Type: application/json' --data-binary @- "$HARBOR_URL/api/v2.0$path"
+  else
+    ws curl -s -o /dev/null -w '%{http_code}' -u admin:Harbor12345 -X "$method" "$HARBOR_URL/api/v2.0$path"
+  fi
+}
+psql_on() {
+  # psql_on DEPLOYMENT SQL: runs one SQL statement against the registry database.
+  kubectl -n harbor-deps exec -i "deploy/$1" -- psql -U harbor -d registry -tAc "$2"
+}
+s3() {
+  # s3 ARGS...: runs `aws s3 ARGS` in the s3-client pod.
+  kubectl -n harbor-deps exec -i deploy/s3-client -- aws s3 "$@"
+}
+registry_login() {
+  ws regctl registry login harbor.localtest.me:8443 -u admin -p Harbor12345 >/dev/null 2>&1
+}
+wait_for_harbor() {
+  # Waits until /api/v2.0/health reports every component healthy.
+  for _ in $(seq 1 120); do
+    if [ "$(harbor_api GET /health 2>/dev/null | ws jq -r '.status' 2>/dev/null)" = "healthy" ]; then
+      return 0
+    fi
+    sleep 5
+  done
+  return 1
+}
+
+wait_for_harbor || true
+seed_content() {
+  # Creates the project inventory and copies podinfo 6.15.0 into it.
+  harbor_api POST /projects '{"project_name":"inventory","metadata":{"public":"false"}}' >/dev/null || true
+  registry_login
+  ws regctl image copy ghcr.io/stefanprodan/podinfo:6.15.0 harbor.localtest.me:8443/inventory/podinfo:6.15.0
+}
+seed_content
+# Record what the grader needs to tell a real restore from an untouched cluster.
+DB_OID="$(psql_on postgres "select oid from pg_database where datname='registry'" | tr -d '[:space:]')"
+DIGEST="$(ws regctl image digest harbor.localtest.me:8443/inventory/podinfo:6.15.0)"
+kubectl -n harbor-deps create configmap restore-baseline \
+  --from-literal=registry-oid="$DB_OID" --from-literal=digest="$DIGEST" \
+  --from-literal=seeded-at="$(date -u +%s)" --dry-run=client -o yaml | kubectl apply -f -
+echo "[lab] Harbor holds inventory/podinfo:6.15.0. Backing it up, the disaster and the restore are the task."
