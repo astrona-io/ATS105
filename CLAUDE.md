@@ -299,6 +299,7 @@ Pages use these helpers, defined once per page that needs them:
 
 ```sh
 ws() { kubectl -n workstation exec -i deploy/workstation -- "$@"; }
+wst() { kubectl -n workstation exec -it deploy/workstation -- "$@"; }
 harbor_api() {
   if [ -n "${3:-}" ]; then
     ws curl -sS -u admin:Harbor12345 -X "$1" -H 'Content-Type: application/json' \
