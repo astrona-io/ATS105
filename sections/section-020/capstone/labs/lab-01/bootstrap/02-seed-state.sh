@@ -63,5 +63,13 @@ seed_content() {
   registry_login
   ws regctl image copy ghcr.io/stefanprodan/podinfo:6.15.0 harbor.localtest.me:8443/inventory/podinfo:6.15.0
 }
+# The fault (two registry replicas, each with its own filesystem) would break
+# this push too: the blobs land on one replica and the manifest upload on the
+# other. Push with one replica, then go back to two: the content then lives
+# on one replica's filesystem only, which is the starting state of the task.
+kubectl -n harbor scale deployment harbor-registry --replicas=1
+kubectl -n harbor rollout status deployment/harbor-registry --timeout=300s
 seed_content
+kubectl -n harbor scale deployment harbor-registry --replicas=2
+kubectl -n harbor rollout status deployment/harbor-registry --timeout=300s
 echo "[lab] Harbor was scaled without shared storage. Making it consistent is the task."
