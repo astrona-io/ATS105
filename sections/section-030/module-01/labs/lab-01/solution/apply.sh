@@ -66,11 +66,11 @@ helm -n harbor get values harbor -o yaml > /tmp/ats105-harbor-values.yaml
 
 # 2. The disaster from the task.
 helm -n harbor uninstall harbor --wait
-kubectl -n harbor-deps exec deploy/postgres -- dropdb -U harbor -d postgres registry
+kubectl -n harbor-deps exec deploy/postgres -- dropdb -U harbor --maintenance-db=postgres registry
 s3 rm s3://harbor --recursive
 
 # 3. Restore.
-kubectl -n harbor-deps exec deploy/postgres -- createdb -U harbor -d postgres registry
+kubectl -n harbor-deps exec deploy/postgres -- createdb -U harbor --maintenance-db=postgres registry
 kubectl -n harbor-deps exec deploy/postgres -- pg_restore -U harbor -d registry /backup/registry.dump
 s3 sync s3://harbor-backup s3://harbor
 kubectl apply -f /tmp/ats105-harbor-secrets.yaml

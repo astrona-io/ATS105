@@ -18,7 +18,7 @@ The auditors want proof that Harbor can be restored. The release `harbor` in the
 
    ```sh
    helm -n harbor uninstall harbor --wait
-   kubectl -n harbor-deps exec deploy/postgres -- dropdb -U harbor -d postgres registry
+   kubectl -n harbor-deps exec deploy/postgres -- dropdb -U harbor --maintenance-db=postgres registry
    kubectl -n harbor-deps exec deploy/s3-client -- aws s3 rm s3://harbor --recursive
    ```
 

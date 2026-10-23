@@ -21,11 +21,11 @@ The digest starts with `sha256:`. If the dump or one of the two files is missing
 
 ## The disaster
 
-These three commands delete the Harbor release, drop the database and empty the image bucket. `dropdb` must connect to a different database than the one it drops, so it uses `postgres`:
+These three commands delete the Harbor release, drop the database and empty the image bucket. `dropdb` must connect to a different database than the one it drops, so `--maintenance-db=postgres` makes it connect to `postgres`:
 
 ```sh
 helm -n harbor uninstall harbor --wait
-kubectl -n harbor-deps exec deploy/postgres -- dropdb -U harbor -d postgres registry
+kubectl -n harbor-deps exec deploy/postgres -- dropdb -U harbor --maintenance-db=postgres registry
 kubectl -n harbor-deps exec deploy/s3-client -- aws s3 rm s3://harbor --recursive
 ```
 
@@ -36,7 +36,7 @@ Harbor's pods are gone, the database `registry` no longer exists, and the bucket
 Restore in the order Harbor needs: first the data, then the secrets, and Harbor last, so it starts on complete data. Recreate the empty database and restore the dump into it:
 
 ```sh
-kubectl -n harbor-deps exec deploy/postgres -- createdb -U harbor -d postgres registry
+kubectl -n harbor-deps exec deploy/postgres -- createdb -U harbor --maintenance-db=postgres registry
 kubectl -n harbor-deps exec deploy/postgres -- pg_restore -U harbor -d registry /backup/registry.dump
 ```
 

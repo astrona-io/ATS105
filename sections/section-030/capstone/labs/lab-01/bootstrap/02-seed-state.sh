@@ -74,9 +74,9 @@ kubectl -n harbor-deps create configmap restore-baseline --from-literal=digest="
 kubectl -n harbor-deps exec deploy/postgres -- pg_dump -U harbor -d registry -Fc -f /backup/registry.dump
 s3 sync s3://harbor s3://harbor-backup >/dev/null
 helm -n harbor uninstall harbor --wait
-kubectl -n harbor-deps exec deploy/postgres -- dropdb -U harbor -d postgres registry
+kubectl -n harbor-deps exec deploy/postgres -- dropdb -U harbor --maintenance-db=postgres registry
 s3 rm s3://harbor --recursive >/dev/null
-kubectl -n harbor-deps exec deploy/postgres -- createdb -U harbor -d postgres registry
+kubectl -n harbor-deps exec deploy/postgres -- createdb -U harbor --maintenance-db=postgres registry
 kubectl -n harbor-deps exec deploy/postgres -- pg_restore -U harbor -d registry /backup/registry.dump
 cat > /tmp/ats105-hurried-values.yaml <<'EOF'
 # Helm values for Harbor (chart harbor-helm) in this environment.

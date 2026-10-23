@@ -31,7 +31,7 @@ Run the three commands from the task exactly as written.
 ## Step 4: Restore the data, then Harbor
 
 ```sh
-kubectl -n harbor-deps exec deploy/postgres -- createdb -U harbor -d postgres registry
+kubectl -n harbor-deps exec deploy/postgres -- createdb -U harbor --maintenance-db=postgres registry
 kubectl -n harbor-deps exec deploy/postgres -- pg_restore -U harbor -d registry /backup/registry.dump
 kubectl -n harbor-deps exec deploy/s3-client -- aws s3 sync s3://harbor-backup s3://harbor
 kubectl apply -f harbor-secrets-backup.yaml
@@ -68,5 +68,5 @@ astrona submit -c sections/section-030/module-01/labs/lab-01
 
 ## Common mistakes
 
-- Forgetting `-d postgres` on `dropdb` and `createdb`: they cannot connect to the database they drop or create.
+- Forgetting `--maintenance-db=postgres` on `dropdb` and `createdb`: they cannot connect to the database they drop or create.
 - Losing the shell variable `ORIGINAL_DIGEST` in a new terminal. Write the digest down.
