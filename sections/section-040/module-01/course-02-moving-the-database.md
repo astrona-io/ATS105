@@ -54,10 +54,12 @@ The value is now `true`. Harbor's records cannot change, so dump the database on
 kubectl -n harbor-deps exec deploy/postgres -- pg_dump -U harbor -d registry -Fc -f /backup/registry.dump
 kubectl -n harbor-deps exec deploy/postgres -- cat /backup/registry.dump \
   | kubectl -n harbor-deps exec -i deploy/postgres-new -- sh -c 'cat > /backup/registry.dump'
+kubectl -n harbor-deps exec deploy/postgres -- wc -c /backup/registry.dump
+kubectl -n harbor-deps exec deploy/postgres-new -- wc -c /backup/registry.dump
 kubectl -n harbor-deps exec deploy/postgres-new -- pg_restore -U harbor -d registry --clean --if-exists /backup/registry.dump
 ```
 
-The first command writes the dump, the second streams it through your machine into `postgres-new`, and the third restores it. `--clean --if-exists` drops any object before recreating it, so the restore works even if the target database is not quite empty. Check that the data arrived:
+The first command writes the dump and the second streams it through your machine into `postgres-new`. The two `wc -c` commands print the file size on each side; they must be equal, because `kubectl exec` can lose the end of a stream, and a short dump makes `pg_restore` fail with `input file is too short`. If the sizes differ, run the copy again. The last command restores the dump. `--clean --if-exists` drops any object before recreating it, so the restore works even if the target database is not quite empty. Check that the data arrived:
 
 ```sh
 kubectl -n harbor-deps exec deploy/postgres-new -- psql -U harbor -d registry -tAc 'select name from project'

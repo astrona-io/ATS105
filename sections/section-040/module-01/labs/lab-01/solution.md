@@ -29,9 +29,13 @@ harbor_api PUT /configurations '{"read_only":true}'
 kubectl -n harbor-deps exec deploy/postgres -- pg_dump -U harbor -d registry -Fc -f /backup/registry.dump
 kubectl -n harbor-deps exec deploy/postgres -- cat /backup/registry.dump \
   | kubectl -n harbor-deps exec -i deploy/postgres-new -- sh -c 'cat > /backup/registry.dump'
+kubectl -n harbor-deps exec deploy/postgres -- wc -c /backup/registry.dump
+kubectl -n harbor-deps exec deploy/postgres-new -- wc -c /backup/registry.dump
 kubectl -n harbor-deps exec deploy/postgres-new -- pg_restore -U harbor -d registry --clean --if-exists /backup/registry.dump
 kubectl -n harbor-deps exec deploy/postgres-new -- psql -U harbor -d registry -tAc 'select name from project'
 ```
+
+The two `wc -c` lines must show the same size. If the copy is shorter, `kubectl exec` lost the end of the stream: run the copy again before `pg_restore`.
 
 The new server lists `library` and `inventory`. The dump on `postgres` is also your backup before the upgrade.
 

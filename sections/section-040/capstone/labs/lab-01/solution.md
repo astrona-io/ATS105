@@ -31,8 +31,12 @@ harbor_api GET /configurations | ws jq -r '.read_only.value'
 kubectl -n harbor-deps exec deploy/postgres -- pg_dump -U harbor -d registry -Fc -f /backup/registry.dump
 kubectl -n harbor-deps exec deploy/postgres -- cat /backup/registry.dump \
   | kubectl -n harbor-deps exec -i deploy/postgres-new -- sh -c 'cat > /backup/registry.dump'
+kubectl -n harbor-deps exec deploy/postgres -- wc -c /backup/registry.dump
+kubectl -n harbor-deps exec deploy/postgres-new -- wc -c /backup/registry.dump
 kubectl -n harbor-deps exec deploy/postgres-new -- pg_restore -U harbor -d registry --clean --if-exists /backup/registry.dump
 ```
+
+The two `wc -c` lines must show the same size. If the copy is shorter, `kubectl exec` lost the end of the stream: run the copy again before `pg_restore`.
 
 `read_only` is `true`. `--clean --if-exists` replaces the stale objects on `postgres-new` with the fresh ones.
 

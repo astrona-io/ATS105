@@ -68,8 +68,16 @@ harbor_api POST /projects '{"project_name":"builds","metadata":{"public":"false"
 ws regctl image copy ghcr.io/stefanprodan/podinfo:6.14.1 harbor.localtest.me:8443/builds/old-builds:6.14.1
 # An early copy of the database on postgres-new, taken before the project inventory-late existed.
 kubectl -n harbor-deps exec deploy/postgres -- pg_dump -U harbor -d registry -Fc -f /backup/registry.dump
-kubectl -n harbor-deps exec deploy/postgres -- cat /backup/registry.dump \
-  | kubectl -n harbor-deps exec -i deploy/postgres-new -- sh -c 'cat > /backup/registry.dump'
+# Copy the dump through a local file and compare sizes: kubectl exec -i can
+# drop the end of stdin, and pg_restore then reads a short or empty file.
+DUMP_COPY="$(mktemp)"
+kubectl -n harbor-deps exec deploy/postgres -- cat /backup/registry.dump > "$DUMP_COPY"
+for _ in 1 2 3 4 5; do
+  kubectl -n harbor-deps exec -i deploy/postgres-new -- sh -c 'cat > /backup/registry.dump' < "$DUMP_COPY"
+  [ "$(kubectl -n harbor-deps exec deploy/postgres-new -- sh -c 'wc -c < /backup/registry.dump' | tr -d ' ')" = "$(wc -c < "$DUMP_COPY" | tr -d ' ')" ] && break
+  sleep 1
+done
+rm -f "$DUMP_COPY"
 kubectl -n harbor-deps exec deploy/postgres-new -- pg_restore -U harbor -d registry --clean --if-exists /backup/registry.dump
 harbor_api POST /projects '{"project_name":"inventory-late","metadata":{"public":"false"}}' >/dev/null
 harbor_api PUT /configurations '{"read_only":true}' >/dev/null
