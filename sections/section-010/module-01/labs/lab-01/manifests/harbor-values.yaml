@@ -25,3 +25,11 @@ trivy:
   enabled: false
 metrics:
   enabled: false
+# Harbor publishes its images for amd64 only. On an arm64 machine (Apple
+# silicon) they run under emulation, and the bundled Valkey (Redis) crashes
+# there. The official Valkey image is multi-architecture and replaces it.
+redis:
+  internal:
+    image:
+      repository: docker.io/valkey/valkey
+      tag: 8.1.10-alpine
