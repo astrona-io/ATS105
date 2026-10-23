@@ -56,10 +56,18 @@ wait_for_harbor() {
 }
 
 TAG="grader-$(date +%s)"
+# push_fresh: pushes a small artifact with content Harbor has never seen.
+# A copy of podinfo would reuse layers Harbor already knows from before the
+# fix (core answers blob checks from its database), so nothing new would be
+# uploaded and the test would not touch the new storage.
+push_fresh() {
+  printf 'grader %s %s\n' "$TAG" "$(date +%s)-$RANDOM" | ws regctl artifact put \
+    --artifact-type application/vnd.astrona.grader.v1 "harbor.localtest.me:8443/inventory/podinfo:$TAG" >/dev/null 2>&1
+}
 registry_login
-if ! ws regctl image copy ghcr.io/stefanprodan/podinfo:6.15.0 "harbor.localtest.me:8443/inventory/podinfo:$TAG" >/dev/null 2>&1; then
+if ! push_fresh; then
   harbor_api POST /projects '{"project_name":"inventory","metadata":{"public":"false"}}' >/dev/null 2>&1
-  if ! ws regctl image copy ghcr.io/stefanprodan/podinfo:6.15.0 "harbor.localtest.me:8443/inventory/podinfo:$TAG" >/dev/null 2>&1; then
+  if ! push_fresh; then
     echo "FAIL: pushing inventory/podinfo:$TAG to Harbor failed."
     exit 1
   fi

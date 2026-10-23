@@ -67,12 +67,14 @@ Keep `portal` and `registry` at `2`, and every other line as it is.
 ```sh
 helm upgrade harbor harbor/harbor --version 1.19.4 --namespace harbor \
   --values harbor-values.yaml --wait --timeout 20m
-ws regctl image copy ghcr.io/stefanprodan/podinfo:6.15.0 harbor.localtest.me:8443/inventory/podinfo:check2
+printf 'check %s\n' "$(date +%s)" | ws regctl artifact put --artifact-type application/vnd.example.check.v1 harbor.localtest.me:8443/inventory/podinfo:check2
 for attempt in $(seq 1 20); do
-  ws regctl manifest head harbor.localtest.me:8443/inventory/podinfo:check2 >/dev/null 2>&1 && echo ok || echo failed
+  ws regctl artifact get harbor.localtest.me:8443/inventory/podinfo:check2 >/dev/null 2>&1 && echo ok || echo failed
 done
 kubectl -n harbor-deps exec deploy/s3-client -- aws s3 ls s3://harbor/docker/registry/v2/repositories/inventory/
 ```
+
+The test pushes a small new artifact instead of copying podinfo again. Harbor already knows the podinfo layers from before the fix, so a second copy would upload nothing new and only the manifest would reach the bucket. `regctl artifact get` reads the content itself, not only the manifest.
 
 All 20 reads print `ok`, and the bucket holds `podinfo/`. The old tags pushed before the fix point at layers the new storage never had; the task allows that. Then submit:
 
