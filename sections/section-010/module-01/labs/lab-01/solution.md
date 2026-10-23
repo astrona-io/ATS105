@@ -21,11 +21,11 @@ The values hold the TLS Secret, the external URL, the administrator password, `e
 Check that each Secret has the key the chart expects, without printing the values:
 
 ```sh
-kubectl -n harbor get secret harbor-database -o jsonpath='{.data}' | jq 'keys'
+kubectl -n harbor get secret harbor-external-db -o jsonpath='{.data}' | jq 'keys'
 kubectl -n harbor get secret harbor-s3 -o jsonpath='{.data}' | jq 'keys'
 ```
 
-`harbor-database` has the key `password`, and `harbor-s3` has `REGISTRY_STORAGE_S3_ACCESSKEY` and `REGISTRY_STORAGE_S3_SECRETKEY`. Those are the names the chart reads.
+`harbor-external-db` has the key `password`, and `harbor-s3` has `REGISTRY_STORAGE_S3_ACCESSKEY` and `REGISTRY_STORAGE_S3_SECRETKEY`. Those are the names the chart reads.
 
 ## Step 3: Write the complete values file
 
@@ -70,7 +70,7 @@ database:
     port: "5432"
     username: harbor
     coreDatabase: registry
-    existingSecret: harbor-database
+    existingSecret: harbor-external-db
     sslmode: disable
 redis:
   type: external

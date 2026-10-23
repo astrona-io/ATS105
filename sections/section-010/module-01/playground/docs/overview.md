@@ -6,7 +6,7 @@ This is a **playground**, not a lab. It starts a fresh cluster, installs Harbor 
 
 - A single-node `kind` Kubernetes cluster. `kubectl` is already pointed at it, and Helm 3.22.1 is on your machine with the chart repository `harbor` added.
 - **Harbor 2.15.4**, the Helm release `harbor` (chart 1.19.4) in the namespace `harbor`, on its **internal** PostgreSQL and Redis and with filesystem storage on an `emptyDir`. It answers at `https://harbor.localtest.me:8443` with a certificate from the Secret `harbor-tls`.
-- The Secrets `harbor-secretkey`, `harbor-database` (key `password`) and `harbor-s3` (keys `REGISTRY_STORAGE_S3_ACCESSKEY` and `REGISTRY_STORAGE_S3_SECRETKEY`) in the namespace `harbor`, ready to use.
+- The Secrets `harbor-secretkey`, `harbor-external-db` (key `password`) and `harbor-s3` (keys `REGISTRY_STORAGE_S3_ACCESSKEY` and `REGISTRY_STORAGE_S3_SECRETKEY`) in the namespace `harbor`, ready to use.
 - The namespace **`harbor-deps`**:
 
   | Workload | What it is |

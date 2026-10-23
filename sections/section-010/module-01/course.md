@@ -31,7 +31,7 @@ Your playground is a single-node `kind` cluster. **Harbor 2.15.4** runs there, i
 | `versitygw` (Service `s3`) | An S3-compatible object store on port `9000` with the empty bucket `harbor` |
 | `s3-client` | A pod with the AWS command-line tool, already pointed at the store |
 
-The namespace `harbor` also holds four Secrets prepared for you: `harbor-tls` (Harbor's certificate), `harbor-secretkey`, `harbor-database` and `harbor-s3`. The `workstation` pod in the namespace `workstation` holds `regctl`, `curl`, `jq` and the `harbor` command-line tool, and trusts Harbor's certificate. The administrator is `admin` with the password `Harbor12345`; these are lab-only credentials.
+The namespace `harbor` also holds four Secrets prepared for you: `harbor-tls` (Harbor's certificate), `harbor-secretkey`, `harbor-external-db` and `harbor-s3`. The `workstation` pod in the namespace `workstation` holds `regctl`, `curl`, `jq` and the `harbor` command-line tool, and trusts Harbor's certificate. The administrator is `admin` with the password `Harbor12345`; these are lab-only credentials.
 
 Launch your playground now, and keep it running next to you while you read the parts:
 

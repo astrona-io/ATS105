@@ -36,7 +36,7 @@ validation:
       type: "file"
       source: "validation/validate-external-values.sh"
     - name: "validate-database-secret"
-      description: "Confirms the Secret harbor-database holds the key password"
+      description: "Confirms the Secret harbor-external-db holds the key password"
       type: "file"
       source: "validation/validate-database-secret.sh"
     - name: "validate-harbor-healthy"

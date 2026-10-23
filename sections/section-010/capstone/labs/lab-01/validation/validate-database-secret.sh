@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PASS when the Secret harbor-database holds the key password
+# PASS when the Secret harbor-external-db holds the key password
 set -uo pipefail
 
 HELM_VERSION="3.22.1"
@@ -55,8 +55,8 @@ wait_for_harbor() {
   return 1
 }
 
-if [ -z "$(kubectl -n harbor get secret harbor-database -o jsonpath='{.data.password}' 2>/dev/null)" ]; then
-  echo "FAIL: the Secret harbor-database has no key named password; the chart reads only that key."
+if [ -z "$(kubectl -n harbor get secret harbor-external-db -o jsonpath='{.data.password}' 2>/dev/null)" ]; then
+  echo "FAIL: the Secret harbor-external-db has no key named password; the chart reads only that key."
   exit 1
 fi
-echo "PASS: the Secret harbor-database holds the key password."
+echo "PASS: the Secret harbor-external-db holds the key password."

@@ -108,7 +108,7 @@ database:
     port: "5432"
     username: harbor
     coreDatabase: registry
-    existingSecret: harbor-database
+    existingSecret: harbor-external-db
     sslmode: disable
 redis:
   type: external

@@ -28,10 +28,10 @@ The chart reads the database settings from the `database` block of its values. W
 | `coreDatabase` | The database name; the default is `registry` |
 | `sslmode` | `disable`, `require`, `verify-ca` or `verify-full`, as in PostgreSQL |
 
-A password in the Helm values ends up in Helm's release history, which anyone with read access to the namespace's Secrets can decode. So the course always uses `existingSecret`. The Secret `harbor-database` was prepared for you. Check that it has the key the chart expects, without printing the value:
+A password in the Helm values ends up in Helm's release history, which anyone with read access to the namespace's Secrets can decode. So the course always uses `existingSecret`. The Secret `harbor-external-db` was prepared for you. Check that it has the key the chart expects, without printing the value:
 
 ```sh
-kubectl -n harbor get secret harbor-database -o jsonpath='{.data}' | jq 'keys'
+kubectl -n harbor get secret harbor-external-db -o jsonpath='{.data}' | jq 'keys'
 ```
 
 The answer is a list with one key, `password`. The chart reads exactly that key name, so a Secret with any other key name leaves Harbor without a database password.
@@ -100,7 +100,7 @@ database:
     port: "5432"
     username: harbor
     coreDatabase: registry
-    existingSecret: harbor-database
+    existingSecret: harbor-external-db
     sslmode: disable
 redis:
   type: external

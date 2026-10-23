@@ -12,7 +12,7 @@ The external services themselves are healthy and must stay as they are:
 
 | Service | Address | Credentials |
 | --- | --- | --- |
-| PostgreSQL | `postgres.harbor-deps.svc.cluster.local:5432`, database `registry` | user `harbor`; the password is in the Secret `harbor-database` |
+| PostgreSQL | `postgres.harbor-deps.svc.cluster.local:5432`, database `registry` | user `harbor`; the password is in the Secret `harbor-external-db` |
 | Redis | `redis.harbor-deps.svc.cluster.local:6379` | none |
 | S3 store | `http://s3.harbor-deps.svc.cluster.local:9000`, bucket `harbor` | keys in the Secret `harbor-s3` |
 
@@ -29,6 +29,6 @@ Find every reason Harbor cannot reach its database, Redis and image storage, and
 ## Done when
 
 - The Helm values name the external PostgreSQL, Redis on port `6379` and the bucket `harbor`, and read credentials from Secrets.
-- The Secret `harbor-database` holds the database password under the key the chart reads.
+- The Secret `harbor-external-db` holds the database password under the key the chart reads.
 - `/api/v2.0/health` reports every component `healthy`.
 - A new image can be pushed and pulled, and its data is in the bucket `harbor`.

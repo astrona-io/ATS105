@@ -58,7 +58,7 @@ wait_for_harbor() {
 
 helm repo add harbor https://helm.goharbor.io >/dev/null 2>&1 || true
 helm repo update harbor >/dev/null
-kubectl -n harbor create secret generic harbor-database \
+kubectl -n harbor create secret generic harbor-external-db \
   --from-literal=password=harbor-db-password --dry-run=client -o yaml | kubectl apply -f -
 cat > /tmp/ats105-harbor-values.yaml <<'EOF'
 # Helm values for Harbor (chart harbor-helm) in this environment.
@@ -105,7 +105,7 @@ database:
     port: "5432"
     username: harbor
     coreDatabase: registry
-    existingSecret: harbor-database
+    existingSecret: harbor-external-db
     sslmode: disable
 redis:
   type: external

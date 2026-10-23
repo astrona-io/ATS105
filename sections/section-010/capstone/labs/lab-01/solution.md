@@ -2,7 +2,7 @@
 
 Work the task yourself first. Running `astrona submit -c sections/section-010/capstone/labs/lab-01` after a step tells you which checks pass, without telling you what is left.
 
-The grader checks four things: the Helm values point at the right services through Secrets, the Secret `harbor-database` has the key `password`, Harbor reports healthy, and a new image pushes, pulls and lands in the bucket `harbor`.
+The grader checks four things: the Helm values point at the right services through Secrets, the Secret `harbor-external-db` has the key `password`, Harbor reports healthy, and a new image pushes, pulls and lands in the bucket `harbor`.
 
 ## Step 1: See which components fail
 
@@ -18,14 +18,14 @@ kubectl -n harbor logs deploy/harbor-core --tail=30
 The chart reads the database password from the key `password` of the Secret named in `database.external.existingSecret`. Look at the keys the Secret really has:
 
 ```sh
-kubectl -n harbor get secret harbor-database -o jsonpath='{.data}' | jq 'keys'
+kubectl -n harbor get secret harbor-external-db -o jsonpath='{.data}' | jq 'keys'
 ```
 
 It has one key, `db-password`. The chart does not read that key, so Harbor gets no password. Recreate the Secret with the right key and the same value:
 
 ```sh
-DB_PASSWORD="$(kubectl -n harbor get secret harbor-database -o jsonpath='{.data.db-password}' | base64 -d)"
-kubectl -n harbor create secret generic harbor-database \
+DB_PASSWORD="$(kubectl -n harbor get secret harbor-external-db -o jsonpath='{.data.db-password}' | base64 -d)"
+kubectl -n harbor create secret generic harbor-external-db \
   --from-literal=password="$DB_PASSWORD" --dry-run=client -o yaml | kubectl apply -f -
 ```
 

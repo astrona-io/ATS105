@@ -117,7 +117,7 @@ fi
 # Lab-only credentials, kept in Secrets so the Helm values never hold them.
 kubectl -n harbor create secret generic harbor-secretkey \
   --from-literal=secretKey=lab-secretkey-16 --dry-run=client -o yaml | kubectl apply -f -
-kubectl -n harbor create secret generic harbor-database \
+kubectl -n harbor create secret generic harbor-external-db \
   --from-literal=db-password=harbor-db-password --dry-run=client -o yaml | kubectl apply -f -
 kubectl -n harbor create secret generic harbor-s3 \
   --from-literal=REGISTRY_STORAGE_S3_ACCESSKEY=harbor-s3 \

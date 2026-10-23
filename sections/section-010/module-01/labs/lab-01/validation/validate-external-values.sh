@@ -78,9 +78,9 @@ fi
 value() { printf '%s' "$VALUES" | ws jq -r "$1"; }
 [ "$(value '.database.type')" = "external" ] || { echo "FAIL: database.type is not external."; exit 1; }
 [ "$(value '.database.external.host')" = "postgres.harbor-deps.svc.cluster.local" ] || { echo "FAIL: database.external.host is not postgres.harbor-deps.svc.cluster.local."; exit 1; }
-[ "$(value '.database.external.existingSecret')" = "harbor-database" ] || { echo "FAIL: database.external.existingSecret is not harbor-database."; exit 1; }
+[ "$(value '.database.external.existingSecret')" = "harbor-external-db" ] || { echo "FAIL: database.external.existingSecret is not harbor-external-db."; exit 1; }
 if [ "$(value '.database.external.password // empty')" != "" ]; then
-  echo "FAIL: the database password is written in the Helm values. Read it from the Secret harbor-database instead."
+  echo "FAIL: the database password is written in the Helm values. Read it from the Secret harbor-external-db instead."
   exit 1
 fi
 [ "$(value '.redis.type')" = "external" ] || { echo "FAIL: redis.type is not external."; exit 1; }

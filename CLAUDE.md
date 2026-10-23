@@ -286,7 +286,7 @@ Harbor's fork) talks to versitygw with path-style requests when only
 | Name | What it is |
 | --- | --- |
 | Harbor (namespace `harbor`, Helm release `harbor`) | Harbor at `https://harbor.localtest.me:8443`. TLS from the Secret `harbor-tls` (a lab CA and a certificate made by the bootstrap with `openssl`), `caSecretName: harbor-tls`, Trivy and metrics off, no PersistentVolumeClaims |
-| Secrets in `harbor` | `harbor-tls` (`tls.crt`, `tls.key`, `ca.crt`), `harbor-secretkey` (`secretKey` = `lab-secretkey-16`), `harbor-database` (`password`), `harbor-s3` (`REGISTRY_STORAGE_S3_ACCESSKEY`, `REGISTRY_STORAGE_S3_SECRETKEY`). Lab-only values |
+| Secrets in `harbor` | `harbor-tls` (`tls.crt`, `tls.key`, `ca.crt`), `harbor-secretkey` (`secretKey` = `lab-secretkey-16`), `harbor-external-db` (`password`), `harbor-s3` (`REGISTRY_STORAGE_S3_ACCESSKEY`, `REGISTRY_STORAGE_S3_SECRETKEY`). Lab-only values |
 | `postgres` (namespace `harbor-deps`) | PostgreSQL 15.19, user `harbor`, password `harbor-db-password`, database `registry`, an `emptyDir` at `/backup` for dumps |
 | `postgres-new` | A second, empty PostgreSQL with the same settings; section 040 only |
 | `redis` | Redis 7.4.11 on port `6379`, no password |

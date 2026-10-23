@@ -75,7 +75,7 @@ helm upgrade harbor harbor/harbor --version 1.19.4 --namespace harbor \
   --values harbor-values.yaml --wait --timeout 20m
 ```
 
-`grep` shows the new host, and the upgrade restarts `core` and `jobservice` on `postgres-new`. Both PostgreSQL servers use the same user and password, so the Secret `harbor-database` does not change. Check Harbor, then close the window:
+`grep` shows the new host, and the upgrade restarts `core` and `jobservice` on `postgres-new`. Both PostgreSQL servers use the same user and password, so the Secret `harbor-external-db` does not change. Check Harbor, then close the window:
 
 ```sh
 ws curl -s https://harbor.localtest.me:8443/api/v2.0/health | ws jq -r '.status'

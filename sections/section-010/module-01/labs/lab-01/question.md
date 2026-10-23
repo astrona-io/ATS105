@@ -10,7 +10,7 @@ The platform team wants Harbor's pods to hold no data. Today the release `harbor
 
 | Service | Address | Credentials |
 | --- | --- | --- |
-| PostgreSQL | `postgres.harbor-deps.svc.cluster.local:5432`, database `registry` | user `harbor`, password in the Secret `harbor-database` (key `password`) |
+| PostgreSQL | `postgres.harbor-deps.svc.cluster.local:5432`, database `registry` | user `harbor`, password in the Secret `harbor-external-db` (key `password`) |
 | Redis | `redis.harbor-deps.svc.cluster.local:6379` | none |
 | S3 store | `http://s3.harbor-deps.svc.cluster.local:9000`, bucket `harbor`, region `us-east-1` | keys in the Secret `harbor-s3` |
 
@@ -18,7 +18,7 @@ The platform team wants Harbor's pods to hold no data. Today the release `harbor
 
 Upgrade the release `harbor` (chart `harbor/harbor` version `1.19.4`) so that:
 
-1. Harbor uses the external PostgreSQL, with the password read from the Secret `harbor-database`.
+1. Harbor uses the external PostgreSQL, with the password read from the Secret `harbor-external-db`.
 2. Harbor uses the external Redis.
 3. The registry stores images in the bucket `harbor`, with the keys read from the Secret `harbor-s3`.
 4. `jobservice` writes job logs to the database.
