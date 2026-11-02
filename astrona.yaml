@@ -29,8 +29,6 @@ training:
     name: Harbor
     code: HARBOR
     provider: Astrona
-    domain: Enterprise Operations, High Availability & Helm
-    weight: 15
 
 modules:
 
