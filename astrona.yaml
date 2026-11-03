@@ -372,6 +372,46 @@ modules:
         path: sections/section-030/module-01/course-03-summary.md
 
       - type: reading
+        title: "Check A Harbor Backup Before You Need It"
+        path: sections/section-030/module-02/course.md
+      - type: reading
+        title: "What A Database Dump Contains"
+        path: sections/section-030/module-02/course-01-what-a-dump-contains.md
+      - type: reading
+        title: "Copying The Bucket"
+        path: sections/section-030/module-02/course-02-copying-the-bucket.md
+      - type: reading
+        title: "Secrets And Helm Values In The Backup"
+        path: sections/section-030/module-02/course-03-secrets-and-values.md
+      - type: reading
+        title: "Question"
+        path: sections/section-030/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Take A Complete Harbor Backup Lab"
+        path: sections/section-030/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: backup-restore
+        task_kind: build
+        tags: [harbor-helm, pg-dump, bucket-sync, secret-key, tls-certificate, kubernetes-secret]
+        learning_goals:
+          - Take a custom-format dump and prove its contents with pg_restore --list
+          - Copy the bucket and prove the copy by comparing object counts
+          - Save the certificate, the secretKey and the Helm values outside the release
+        resources:
+          - name: "Deploying Harbor with high availability via Helm"
+            url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: reading
+        title: "Summary"
+        path: sections/section-030/module-02/course-04-summary.md
+      - type: quiz
+        title: "Knowledge Check: Check A Harbor Backup Before You Need It"
+        path: sections/section-030/module-02/quiz.yaml
+        pass_score: 70
+
+      - type: reading
         title: Question
         path: sections/section-030/capstone/labs/lab-01/question.md
       - type: lab
@@ -443,6 +483,46 @@ modules:
       - type: reading
         title: Summary
         path: sections/section-040/module-01/course-04-summary.md
+
+      - type: reading
+        title: "Plan And Check A Harbor Upgrade"
+        path: sections/section-040/module-02/course.md
+      - type: reading
+        title: "Reading What A Chart Version Changes"
+        path: sections/section-040/module-02/course-01-reading-what-a-chart-version-changes.md
+      - type: reading
+        title: "A Backup Instead Of A Rollback"
+        path: sections/section-040/module-02/course-02-a-backup-instead-of-a-rollback.md
+      - type: reading
+        title: "Upgrading And Watching The Migration"
+        path: sections/section-040/module-02/course-03-upgrading-and-watching-the-migration.md
+      - type: reading
+        title: "Question"
+        path: sections/section-040/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Upgrade Harbor In Place After A Backup Lab"
+        path: sections/section-040/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: upgrades
+        task_kind: migration
+        tags: [harbor-helm, chart-upgrade, schema-migration, pg-dump, values-yaml]
+        learning_goals:
+          - Take a custom-format dump before the upgrade starts
+          - Upgrade the release to chart 1.19.4 with the installed values
+          - Prove the upgrade with the release, the database host and a pull
+        resources:
+          - name: "Upgrading Harbor deployed with Helm"
+            url: https://goharbor.io/docs/2.15.0/administration/upgrade/helm-upgrade/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: reading
+        title: "Summary"
+        path: sections/section-040/module-02/course-04-summary.md
+      - type: quiz
+        title: "Knowledge Check: Plan And Check A Harbor Upgrade"
+        path: sections/section-040/module-02/quiz.yaml
+        pass_score: 70
 
       - type: reading
         title: Question

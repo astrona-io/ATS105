@@ -25,6 +25,13 @@ The playground holds Harbor on external services with the image `inventory/podin
 2. A Restore Drill, followed by the lab **Back Up Harbor And Restore It After A Disaster**
 3. Summary
 
+### 2. Check A Harbor Backup Before You Need It
+
+1. What A Database Dump Contains
+2. Copying The Bucket
+3. Secrets And Helm Values In The Backup, followed by the lab **Take A Complete Harbor Backup**
+4. Summary
+
 ## Section capstone: Finish A Hurried Restore
 
 After a real outage, Harbor was restored in a hurry. It starts, but tools reject its certificate, old images do not pull, and a registry endpoint can no longer sign in. Work the capstone after the module lab.

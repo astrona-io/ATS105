@@ -427,3 +427,95 @@ questions:
         explanation: "Not correct. Nodes carry their own labels."
     correct_option: c
     explanation: "The values hold only `maxSkew`, `topologyKey` and `whenUnsatisfiable`."
+
+  - id: ats105-final-q19
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read a dump without restoring"
+    source_readings:
+      - sections/section-030/module-02/course-01-what-a-dump-contains.md
+    prompt: "Which command shows which tables of a dump hold data, without restoring it?"
+    options:
+      - id: a
+        text: "`pg_dump --list`"
+        explanation: "Not correct. `pg_dump` writes dumps, it does not read them."
+      - id: b
+        text: "`psql -f /backup/registry.dump`"
+        explanation: "Not correct. It cannot read an archive."
+      - id: c
+        text: "`ls -l /backup`"
+        explanation: "Not correct. It shows only the file size."
+      - id: d
+        text: "`pg_restore --list /backup/registry.dump`"
+        explanation: "Correct. The `TABLE DATA` lines name tables with rows."
+    correct_option: d
+    explanation: "The `TABLE DATA` lines name tables with rows."
+
+  - id: ats105-final-q20
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Prove a bucket copy"
+    source_readings:
+      - sections/section-030/module-02/course-02-copying-the-bucket.md
+    prompt: "How do you prove that the copy of the bucket is complete?"
+    options:
+      - id: a
+        text: "Read the exit code of `sync`"
+        explanation: "Not correct. An interrupted copy can still look fine."
+      - id: b
+        text: "List only the top folder"
+        explanation: "Not correct. This does not count the objects."
+      - id: c
+        text: "Open the portal"
+        explanation: "Not correct. The portal does not check the copy."
+      - id: d
+        text: "Compare the object counts of both buckets"
+        explanation: "Correct. `s3 ls --recursive | wc -l` on both sides gives the counts."
+    correct_option: d
+    explanation: "`s3 ls --recursive | wc -l` on both sides gives the counts."
+
+  - id: ats105-final-q21
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "State the rollback rule"
+    source_readings:
+      - sections/section-040/module-02/course-02-a-backup-instead-of-a-rollback.md
+    prompt: "Why does the Harbor upgrade guide not support `helm rollback`?"
+    options:
+      - id: a
+        text: "Helm has no rollback command"
+        explanation: "Not correct. It has."
+      - id: b
+        text: "The database schema cannot be downgraded"
+        explanation: "Correct. The way back is a restore of the data from before the upgrade."
+      - id: c
+        text: "Harbor images are removed"
+        explanation: "Not correct. They are not."
+      - id: d
+        text: "Redis loses its data"
+        explanation: "Not correct. Redis is not the reason."
+    correct_option: b
+    explanation: "The way back is a restore of the data from before the upgrade."
+
+  - id: ats105-final-q22
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the migration table"
+    source_readings:
+      - sections/section-040/module-02/course-03-upgrading-and-watching-the-migration.md
+    prompt: "Which table holds the schema version of Harbor?"
+    options:
+      - id: a
+        text: "`project`"
+        explanation: "Not correct. It holds projects."
+      - id: b
+        text: "`schema_migrations`"
+        explanation: "Correct. The columns are `version` and `dirty`."
+      - id: c
+        text: "`artifact`"
+        explanation: "Not correct. It holds artifact records."
+      - id: d
+        text: "`harbor_user`"
+        explanation: "Not correct. It holds users."
+    correct_option: b
+    explanation: "The columns are `version` and `dirty`."

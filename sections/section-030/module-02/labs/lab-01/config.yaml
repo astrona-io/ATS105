@@ -1,0 +1,68 @@
+# Take A Complete Harbor Backup
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-105-lab-030-02"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-harbor"
+      description: "Installs Helm 3.22.1, the external services, Harbor (chart 1.19.4) and the workstation pod"
+      type: "file"
+      source: "bootstrap/01-install-harbor.sh"
+    - name: "ats-105-lab-030-02-setup"
+      description: "Starts Harbor on the external services with the project inventory and inventory/podinfo:6.15.0"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+testing:
+  init:
+    - name: "wait-for-harbor"
+      description: "Waits until Harbor answers before the reference solution runs"
+      type: "file"
+      source: "testing/wait-for-harbor.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-dump"
+      description: "Confirms the dump is a valid custom-format archive with the project inventory"
+      type: "file"
+      source: "validation/validate-dump.sh"
+    - name: "validate-bucket-copy"
+      description: "Confirms harbor-backup holds the same objects as harbor"
+      type: "file"
+      source: "validation/validate-bucket-copy.sh"
+    - name: "validate-secrets-copy"
+      description: "Confirms the Secret copy and the values backup match the live objects"
+      type: "file"
+      source: "validation/validate-secrets-copy.sh"
+    - name: "validate-harbor-healthy"
+      description: "Confirms every Harbor component reports healthy"
+      type: "file"
+      source: "validation/validate-harbor-healthy.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - alpine:3.22
+      - amazon/aws-cli:2.38.4
+      - docker.io/goharbor/harbor-core:v2.15.4
+      - docker.io/goharbor/harbor-db:v2.15.4
+      - docker.io/goharbor/harbor-jobservice:v2.15.4
+      - docker.io/goharbor/harbor-portal:v2.15.4
+      - docker.io/goharbor/harbor-registryctl:v2.15.4
+      - docker.io/goharbor/nginx-photon:v2.15.4
+      - docker.io/goharbor/registry-photon:v2.15.4
+      - docker.io/goharbor/trivy-adapter-photon:v2.15.4
+      - docker.io/goharbor/valkey-photon:v2.15.4
+      - postgres:15.19-alpine
+      - redis:7.4.11-alpine
+      - versity/versitygw:v1.9.0

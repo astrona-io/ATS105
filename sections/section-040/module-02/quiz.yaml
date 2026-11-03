@@ -1,0 +1,245 @@
+# Knowledge check for module 02 of section 040. Listed in astrona.yaml as a `type: quiz` entry after the module summary.
+schema_version: 1
+kind: question_bank
+id: ats105-040-02
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: module-02
+  title: "Plan And Check A Harbor Upgrade"
+placement:
+  position: after
+  reading: sections/section-040/module-02/course-04-summary.md
+questions:
+  - id: ats105-040-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Tell the versions apart"
+    source_readings:
+      - sections/section-040/module-02/course-01-reading-what-a-chart-version-changes.md
+    prompt: "What does the application version of a chart name?"
+    options:
+      - id: a
+        text: "The Harbor release that the chart installs by default"
+        explanation: "Correct. The chart version covers the templates and default values."
+      - id: b
+        text: "The Helm client version"
+        explanation: "Not correct. It is a separate version."
+      - id: c
+        text: "The Kubernetes version"
+        explanation: "Not correct. It is unrelated."
+      - id: d
+        text: "The date of the chart"
+        explanation: "Not correct. It is a version number."
+    correct_option: a
+    explanation: "The chart version covers the templates and default values."
+
+  - id: ats105-040-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Compare two chart versions"
+    source_readings:
+      - sections/section-040/module-02/course-01-reading-what-a-chart-version-changes.md
+    prompt: "How do you see which default values changed between chart 1.19.2 and 1.19.4?"
+    options:
+      - id: a
+        text: "`helm get values` for both"
+        explanation: "Not correct. It shows installed values."
+      - id: b
+        text: "`helm history harbor`"
+        explanation: "Not correct. It lists revisions."
+      - id: c
+        text: "`helm lint`"
+        explanation: "Not correct. It checks one chart."
+      - id: d
+        text: "Save `helm show values` of both and run `diff`"
+        explanation: "Correct. Look for lines that are not image tags."
+    correct_option: d
+    explanation: "Look for lines that are not image tags."
+
+  - id: ats105-040-02-q03
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "List chart versions"
+    source_readings:
+      - sections/section-040/module-02/course-01-reading-what-a-chart-version-changes.md
+    prompt: "Which command lists the chart versions with their application versions?"
+    options:
+      - id: a
+        text: "`helm list`"
+        explanation: "Not correct. It lists releases."
+      - id: b
+        text: "`helm repo list`"
+        explanation: "Not correct. It lists repositories."
+      - id: c
+        text: "`helm search repo harbor/harbor --versions`"
+        explanation: "Correct. Run `helm repo update harbor` first."
+      - id: d
+        text: "`helm show chart harbor/harbor`"
+        explanation: "Not correct. It shows one chart."
+    correct_option: c
+    explanation: "Run `helm repo update harbor` first."
+
+  - id: ats105-040-02-q04
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "State the rollback rule"
+    source_readings:
+      - sections/section-040/module-02/course-02-a-backup-instead-of-a-rollback.md
+    prompt: "Why does the Harbor upgrade guide not support `helm rollback`?"
+    options:
+      - id: a
+        text: "Helm has no rollback command"
+        explanation: "Not correct. It has."
+      - id: b
+        text: "The database schema cannot be downgraded"
+        explanation: "Correct. The way back is a restore of the data from before the upgrade."
+      - id: c
+        text: "Harbor images are removed"
+        explanation: "Not correct. They are not."
+      - id: d
+        text: "Redis loses its data"
+        explanation: "Not correct. Redis is not the reason."
+    correct_option: b
+    explanation: "The way back is a restore of the data from before the upgrade."
+
+  - id: ats105-040-02-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Place the backup in the plan"
+    source_readings:
+      - sections/section-040/module-02/course-02-a-backup-instead-of-a-rollback.md
+    prompt: "When must the dump be taken?"
+    options:
+      - id: a
+        text: "Before the upgrade starts"
+        explanation: "Correct. A dump after the upgrade holds the new schema."
+      - id: b
+        text: "After the upgrade, to hold the new schema"
+        explanation: "Not correct. It would not be a way back."
+      - id: c
+        text: "During the migration"
+        explanation: "Not correct. The schema is changing then."
+      - id: d
+        text: "Any time, the order does not matter"
+        explanation: "Not correct. The order is the point."
+    correct_option: a
+    explanation: "A dump after the upgrade holds the new schema."
+
+  - id: ats105-040-02-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pick a safe window"
+    source_readings:
+      - sections/section-040/module-02/course-02-a-backup-instead-of-a-rollback.md
+    prompt: "How do you keep pushes out of the backup and upgrade window?"
+    options:
+      - id: a
+        text: "Scale `registry` to zero"
+        explanation: "Not correct. Pulls would stop too."
+      - id: b
+        text: "Delete the project"
+        explanation: "Not correct. This loses data."
+      - id: c
+        text: "Disable Redis"
+        explanation: "Not correct. Harbor would fail."
+      - id: d
+        text: "Switch on read-only mode"
+        explanation: "Correct. Read-only mode refuses pushes and deletions and allows pulls."
+    correct_option: d
+    explanation: "Read-only mode refuses pushes and deletions and allows pulls."
+
+  - id: ats105-040-02-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Keep the installed values"
+    source_readings:
+      - sections/section-040/module-02/course-03-upgrading-and-watching-the-migration.md
+    prompt: "Why do you upgrade with the file from `helm get values`?"
+    options:
+      - id: a
+        text: "Helm merges old and new values"
+        explanation: "Not correct. Only `--reuse-values` merges."
+      - id: b
+        text: "The chart ignores the file"
+        explanation: "Not correct. It reads it."
+      - id: c
+        text: "A values file replaces the values passed before"
+        explanation: "Correct. A file with only new values drops the external service settings."
+      - id: d
+        text: "It makes the upgrade faster"
+        explanation: "Not correct. It does not."
+    correct_option: c
+    explanation: "A file with only new values drops the external service settings."
+
+  - id: ats105-040-02-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the migration table"
+    source_readings:
+      - sections/section-040/module-02/course-03-upgrading-and-watching-the-migration.md
+    prompt: "Which table holds the schema version of Harbor?"
+    options:
+      - id: a
+        text: "`project`"
+        explanation: "Not correct. It holds projects."
+      - id: b
+        text: "`schema_migrations`"
+        explanation: "Correct. The columns are `version` and `dirty`."
+      - id: c
+        text: "`artifact`"
+        explanation: "Not correct. It holds artifact records."
+      - id: d
+        text: "`harbor_user`"
+        explanation: "Not correct. It holds users."
+    correct_option: b
+    explanation: "The columns are `version` and `dirty`."
+
+  - id: ats105-040-02-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Read the dirty flag"
+    source_readings:
+      - sections/section-040/module-02/course-03-upgrading-and-watching-the-migration.md
+    prompt: "What does `dirty = t` in `schema_migrations` mean?"
+    options:
+      - id: a
+        text: "A migration stopped halfway"
+        explanation: "Correct. It needs a restore, not another upgrade."
+      - id: b
+        text: "The table holds test data"
+        explanation: "Not correct. It does not."
+      - id: c
+        text: "The upgrade finished"
+        explanation: "Not correct. It did not."
+      - id: d
+        text: "Read-only mode is on"
+        explanation: "Not correct. That is another setting."
+    correct_option: a
+    explanation: "It needs a restore, not another upgrade."
+
+  - id: ats105-040-02-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Judge an unchanged version"
+    source_readings:
+      - sections/section-040/module-02/course-03-upgrading-and-watching-the-migration.md
+    prompt: "After a patch upgrade the schema version is unchanged. What does that mean?"
+    options:
+      - id: a
+        text: "The upgrade failed"
+        explanation: "Not correct. The check is the release and a pull."
+      - id: b
+        text: "The backup is invalid"
+        explanation: "Not correct. They are unrelated."
+      - id: c
+        text: "Harbor is in read-only mode"
+        explanation: "Not correct. They are unrelated."
+      - id: d
+        text: "Not necessarily an error, because a patch release may not change the schema"
+        explanation: "Correct. Use the release version, the table and a pull as proofs."
+    correct_option: d
+    explanation: "Use the release version, the table and a pull as proofs."

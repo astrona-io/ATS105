@@ -1,0 +1,36 @@
+# Plan And Check A Harbor Upgrade (PLAYGROUND) — Playground environment
+# A clean sandbox: it spins up, runs OS prep, then stays running for free
+# exploration. No task, no grading, no `astrona submit`.
+# Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-105-playground-040-02"
+  docs:
+    guide: "docs/overview.md"
+bootstrap:
+  init:
+    - name: "prepare"
+      description: "Install Helm, the external services, Harbor (chart 1.19.2) and the workstation pod, then the module's starting state."
+      type: "file"
+      source: "bootstrap/prepare.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The workstation pod with the client tools."
+      type: "file"
+      source: "manifests/lab-start.yaml"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - alpine:3.22
+      - amazon/aws-cli:2.38.4
+      - docker.io/goharbor/harbor-core:v2.15.2
+      - docker.io/goharbor/harbor-jobservice:v2.15.2
+      - docker.io/goharbor/harbor-portal:v2.15.2
+      - docker.io/goharbor/harbor-registryctl:v2.15.2
+      - docker.io/goharbor/nginx-photon:v2.15.2
+      - docker.io/goharbor/registry-photon:v2.15.2
+      - postgres:15.19-alpine
+      - redis:7.4.11-alpine
+      - versity/versitygw:v1.9.0

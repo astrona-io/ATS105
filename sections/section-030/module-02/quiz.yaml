@@ -1,0 +1,245 @@
+# Knowledge check for module 02 of section 030. Listed in astrona.yaml as a `type: quiz` entry after the module summary.
+schema_version: 1
+kind: question_bank
+id: ats105-030-02
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: module-02
+  title: "Check A Harbor Backup Before You Need It"
+placement:
+  position: after
+  reading: sections/section-030/module-02/course-04-summary.md
+questions:
+  - id: ats105-030-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Choose the dump format"
+    source_readings:
+      - sections/section-030/module-02/course-01-what-a-dump-contains.md
+    prompt: "Which `pg_dump` option makes a dump that `pg_restore` can list and restore in parts?"
+    options:
+      - id: a
+        text: "`-Fc`"
+        explanation: "Correct. `-Fc` writes the custom-format archive."
+      - id: b
+        text: "`-Fp`"
+        explanation: "Not correct. It writes plain SQL, which `pg_restore` cannot read."
+      - id: c
+        text: "`--schema-only`"
+        explanation: "Not correct. It leaves out the rows."
+      - id: d
+        text: "`-s`"
+        explanation: "Not correct. It also dumps only the schema."
+    correct_option: a
+    explanation: "`-Fc` writes the custom-format archive."
+
+  - id: ats105-030-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read a dump without restoring"
+    source_readings:
+      - sections/section-030/module-02/course-01-what-a-dump-contains.md
+    prompt: "Which command shows which tables of a dump hold data, without restoring it?"
+    options:
+      - id: a
+        text: "`pg_dump --list`"
+        explanation: "Not correct. `pg_dump` writes dumps, it does not read them."
+      - id: b
+        text: "`psql -f /backup/registry.dump`"
+        explanation: "Not correct. It cannot read an archive."
+      - id: c
+        text: "`ls -l /backup`"
+        explanation: "Not correct. It shows only the file size."
+      - id: d
+        text: "`pg_restore --list /backup/registry.dump`"
+        explanation: "Correct. The `TABLE DATA` lines name tables with rows."
+    correct_option: d
+    explanation: "The `TABLE DATA` lines name tables with rows."
+
+  - id: ats105-030-02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Print one table from a dump"
+    source_readings:
+      - sections/section-030/module-02/course-01-what-a-dump-contains.md
+    prompt: "Which option of `pg_restore` prints one table to standard output?"
+    options:
+      - id: a
+        text: "`--clean`"
+        explanation: "Not correct. It drops objects before it restores."
+      - id: b
+        text: "`-C`"
+        explanation: "Not correct. It creates the database."
+      - id: c
+        text: "`-t project` with `-f -`"
+        explanation: "Correct. The output is SQL that holds the rows of that table."
+      - id: d
+        text: "`--list`"
+        explanation: "Not correct. It prints only the contents list."
+    correct_option: c
+    explanation: "The output is SQL that holds the rows of that table."
+
+  - id: ats105-030-02-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Order a dump and its content"
+    source_readings:
+      - sections/section-030/module-02/course-01-what-a-dump-contains.md
+    prompt: "Why must the content exist before you take the dump?"
+    options:
+      - id: a
+        text: "`pg_dump` locks Harbor until content exists"
+        explanation: "Not correct. It does not lock Harbor."
+      - id: b
+        text: "A dump is a snapshot, and it lacks anything pushed later"
+        explanation: "Correct. Anything pushed afterwards is not in the dump."
+      - id: c
+        text: "The dump format needs at least one project"
+        explanation: "Not correct. The format has no such rule."
+      - id: d
+        text: "A restore creates the content again"
+        explanation: "Not correct. A restore cannot invent content."
+    correct_option: b
+    explanation: "Anything pushed afterwards is not in the dump."
+
+  - id: ats105-030-02-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Say what sync does"
+    source_readings:
+      - sections/section-030/module-02/course-02-copying-the-bucket.md
+    prompt: "What does `aws s3 sync s3://harbor s3://harbor-backup` do without `--delete`?"
+    options:
+      - id: a
+        text: "Copies missing or changed objects and deletes nothing in the destination"
+        explanation: "Correct. A second run prints nothing when nothing is missing."
+      - id: b
+        text: "Mirrors the source and removes extra objects"
+        explanation: "Not correct. That needs `--delete`."
+      - id: c
+        text: "Moves the objects"
+        explanation: "Not correct. `sync` copies."
+      - id: d
+        text: "Compares only names"
+        explanation: "Not correct. It also compares size and time."
+    correct_option: a
+    explanation: "A second run prints nothing when nothing is missing."
+
+  - id: ats105-030-02-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Prove a bucket copy"
+    source_readings:
+      - sections/section-030/module-02/course-02-copying-the-bucket.md
+    prompt: "How do you prove that the copy of the bucket is complete?"
+    options:
+      - id: a
+        text: "Read the exit code of `sync`"
+        explanation: "Not correct. An interrupted copy can still look fine."
+      - id: b
+        text: "List only the top folder"
+        explanation: "Not correct. This does not count the objects."
+      - id: c
+        text: "Open the portal"
+        explanation: "Not correct. The portal does not check the copy."
+      - id: d
+        text: "Compare the object counts of both buckets"
+        explanation: "Correct. `s3 ls --recursive | wc -l` on both sides gives the counts."
+    correct_option: d
+    explanation: "`s3 ls --recursive | wc -l` on both sides gives the counts."
+
+  - id: ats105-030-02-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Order the database and bucket copies"
+    source_readings:
+      - sections/section-030/module-02/course-02-copying-the-bucket.md
+    prompt: "Which order lowers the risk that a tag points to missing layers?"
+    options:
+      - id: a
+        text: "Copy the bucket first, then dump the database"
+        explanation: "Not correct. A tag in the dump can then point to layers missing in the copy."
+      - id: b
+        text: "Dump at the same time without a plan"
+        explanation: "Not correct. The copies are never atomic."
+      - id: c
+        text: "Dump the database first, then copy the bucket"
+        explanation: "Correct. Unreferenced layers in the copy are removed by garbage collection."
+      - id: d
+        text: "Skip the bucket"
+        explanation: "Not correct. Layers are in the bucket only."
+    correct_option: c
+    explanation: "Unreferenced layers in the copy are removed by garbage collection."
+
+  - id: ats105-030-02-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the Secret that decrypts stored credentials"
+    source_readings:
+      - sections/section-030/module-02/course-03-secrets-and-values.md
+    prompt: "Which saved object lets a restored Harbor decrypt stored credentials?"
+    options:
+      - id: a
+        text: "The Secret `harbor-tls`"
+        explanation: "Not correct. It holds the certificate."
+      - id: b
+        text: "The Secret `harbor-secretkey`"
+        explanation: "Correct. A different key makes the restored Harbor fail when it needs a stored credential."
+      - id: c
+        text: "The ConfigMap of `core`"
+        explanation: "Not correct. It holds settings, not the key."
+      - id: d
+        text: "The bucket `harbor`"
+        explanation: "Not correct. It holds layers."
+    correct_option: b
+    explanation: "A different key makes the restored Harbor fail when it needs a stored credential."
+
+  - id: ats105-030-02-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Say why the certificate matters"
+    source_readings:
+      - sections/section-030/module-02/course-03-secrets-and-values.md
+    prompt: "What happens if the restore creates a new certificate?"
+    options:
+      - id: a
+        text: "Clients that trusted the old certificate fail with a certificate error"
+        explanation: "Correct. Save `harbor-tls` with the backup."
+      - id: b
+        text: "Nothing, clients ignore it"
+        explanation: "Not correct. Clients check the certificate."
+      - id: c
+        text: "Harbor refuses to start"
+        explanation: "Not correct. Harbor starts."
+      - id: d
+        text: "The database rejects logins"
+        explanation: "Not correct. The database does not use it."
+    correct_option: a
+    explanation: "Save `harbor-tls` with the backup."
+
+  - id: ats105-030-02-q10
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Save the settings"
+    source_readings:
+      - sections/section-030/module-02/course-03-secrets-and-values.md
+    prompt: "Which command gives the Helm values of the installed release?"
+    options:
+      - id: a
+        text: "`helm show values harbor/harbor`"
+        explanation: "Not correct. It shows the chart defaults."
+      - id: b
+        text: "`helm template harbor/harbor`"
+        explanation: "Not correct. It renders manifests."
+      - id: c
+        text: "`helm list -n harbor`"
+        explanation: "Not correct. It lists releases."
+      - id: d
+        text: "`helm -n harbor get values harbor -o yaml`"
+        explanation: "Correct. The output holds the values you passed."
+    correct_option: d
+    explanation: "The output holds the values you passed."

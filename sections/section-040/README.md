@@ -25,6 +25,13 @@ The playground holds Harbor 2.15.2 (chart 1.19.2) on the PostgreSQL server `post
 3. Garbage Collection After The Change
 4. Summary
 
+### 2. Plan And Check A Harbor Upgrade
+
+1. Reading What A Chart Version Changes
+2. A Backup Instead Of A Rollback
+3. Upgrading And Watching The Migration, followed by the lab **Upgrade Harbor In Place After A Backup**
+4. Summary
+
 ## Section capstone: Finish A Half-Done Database Move
 
 A database move was started on Friday and left half done. Harbor still runs on the old server, a stale copy sits on the new one, Harbor is stuck in read-only mode, and an old repository was never cleaned up. Work the capstone after the module lab.
