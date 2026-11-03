@@ -1,0 +1,68 @@
+# Rotate The Harbor Database Password
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-105-lab-010-03"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-harbor"
+      description: "Installs Helm 3.22.1, the external services, Harbor (chart 1.19.4) and the workstation pod"
+      type: "file"
+      source: "bootstrap/01-install-harbor.sh"
+    - name: "ats-105-lab-010-03-setup"
+      description: "Starts Harbor on the external services with the current database password and one image in the project inventory"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+testing:
+  init:
+    - name: "wait-for-harbor"
+      description: "Waits until Harbor answers before the reference solution runs"
+      type: "file"
+      source: "testing/wait-for-harbor.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-new-password-works"
+      description: "Confirms PostgreSQL accepts the new password for the role harbor and refuses the old one"
+      type: "file"
+      source: "validation/validate-new-password-works.sh"
+    - name: "validate-secret-and-values"
+      description: "Confirms the Secret holds the new password and the Helm values hold no password"
+      type: "file"
+      source: "validation/validate-secret-and-values.sh"
+    - name: "validate-core-uses-new-password"
+      description: "Confirms core runs with the new password, Harbor is healthy and a push and pull work"
+      type: "file"
+      source: "validation/validate-core-uses-new-password.sh"
+    - name: "validate-harbor-healthy"
+      description: "Confirms every Harbor component reports healthy"
+      type: "file"
+      source: "validation/validate-harbor-healthy.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - alpine:3.22
+      - amazon/aws-cli:2.38.4
+      - docker.io/goharbor/harbor-core:v2.15.4
+      - docker.io/goharbor/harbor-db:v2.15.4
+      - docker.io/goharbor/harbor-jobservice:v2.15.4
+      - docker.io/goharbor/harbor-portal:v2.15.4
+      - docker.io/goharbor/harbor-registryctl:v2.15.4
+      - docker.io/goharbor/nginx-photon:v2.15.4
+      - docker.io/goharbor/registry-photon:v2.15.4
+      - docker.io/goharbor/trivy-adapter-photon:v2.15.4
+      - docker.io/goharbor/valkey-photon:v2.15.4
+      - postgres:15.19-alpine
+      - redis:7.4.11-alpine
+      - versity/versitygw:v1.9.0

@@ -25,8 +25,8 @@ section contains:
 
 | Section | Title | Modules | Labs | Topic |
 | --- | --- | --- | --- | --- |
-| [010](sections/section-010) | Harbor On External Services | 1 | 1 + capstone | External PostgreSQL, Redis and S3 |
-| [020](sections/section-020) | High Availability | 1 | 1 + capstone | Replicas and shared state |
+| [010](sections/section-010) | Harbor On External Services | 3 | 3 + capstone | External PostgreSQL, Redis and S3 |
+| [020](sections/section-020) | High Availability | 2 | 2 + capstone | Replicas and shared state |
 | [030](sections/section-030) | Backup And Restore | 1 | 1 + capstone | Backups and a restore drill |
 | [040](sections/section-040) | Upgrades And Database Migration | 1 | 1 + capstone | Chart upgrades, database moves, garbage collection |
 
@@ -42,7 +42,10 @@ upgrade or a database move changes them.
 | Module | Reader | Parts | Labs |
 | --- | --- | --- | --- |
 | 010-01 | [Run Harbor On External Services](sections/section-010/module-01/course.md) | 3 | [lab-01](sections/section-010/module-01/labs/lab-01) |
+| 010-02 | [Expose Harbor And Secure Its Traffic](sections/section-010/module-02/course.md) | 4 | [lab-01](sections/section-010/module-02/labs/lab-01) |
+| 010-03 | [Harbor Secrets, Keys And Credentials](sections/section-010/module-03/course.md) | 4 | [lab-01](sections/section-010/module-03/labs/lab-01) |
 | 020-01 | [Run Harbor With High Availability](sections/section-020/module-01/course.md) | 2 | [lab-01](sections/section-020/module-01/labs/lab-01) |
+| 020-02 | [Keep Harbor Replicas Available During Disruptions](sections/section-020/module-02/course.md) | 4 | [lab-01](sections/section-020/module-02/labs/lab-01) |
 | 030-01 | [Back Up And Restore Harbor](sections/section-030/module-01/course.md) | 2 | [lab-01](sections/section-030/module-01/labs/lab-01) |
 | 040-01 | [Upgrade Harbor And Move Its Database](sections/section-040/module-01/course.md) | 3 | [lab-01](sections/section-040/module-01/labs/lab-01) |
 

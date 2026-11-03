@@ -24,6 +24,16 @@ The module starts at its landing page, which also launches the playground. The p
 2. Scaling The Components And Proving It, followed by the lab **Scale Harbor To Two Replicas Per Component**
 3. Summary
 
+### 2. Keep Harbor Replicas Available During Disruptions
+
+The playground runs two replicas of each component on one node.
+
+1. Disruptions And PodDisruptionBudgets
+2. Spreading Replicas Across Nodes, followed by the lab **Spread And Protect Harbor's Replicas**
+3. Rolling Updates, Probes And Resource Requests
+4. Connection Budgets And Redis Failover
+5. Summary
+
 ## Section capstone: Make A Scaled Harbor Consistent
 
 Someone scaled Harbor in a hurry. Pulls fail one time in two, and nobody can say why, because every pod is `Running`. Work the capstone after the module lab.

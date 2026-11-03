@@ -289,3 +289,141 @@ questions:
         explanation: "Not correct. A restart does not run GC."
     correct_option: c
     explanation: "Correct. Deleting only removes the records."
+
+  - id: ats105-final-q13
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain what externalURL changes"
+    source_readings:
+      - sections/section-010/module-02/course-01-how-harbor-is-exposed.md
+    prompt: "What does `externalURL` change?"
+    options:
+      - id: a
+        text: "How Kubernetes publishes the proxy"
+        explanation: "Not correct. That is `expose.type`."
+      - id: b
+        text: "The port `nginx` listens on"
+        explanation: "Not correct. The ports are set under `expose`."
+      - id: c
+        text: "The address Harbor tells clients to use, such as the token realm"
+        explanation: "Correct. `externalURL` builds the token realm and the login commands."
+      - id: d
+        text: "The certificate that `nginx` serves"
+        explanation: "Not correct. The certificate comes from `expose.tls`."
+    correct_option: c
+    explanation: "`externalURL` builds the token realm and the login commands."
+
+  - id: ats105-final-q14
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Apply a replaced certificate"
+    source_readings:
+      - sections/section-010/module-02/course-02-certificates-for-clients.md
+    prompt: "After you update the Secret `harbor-tls` with a new certificate, what makes `nginx` use it reliably?"
+    options:
+      - id: a
+        text: "Wait for Kubernetes to update the mounted file"
+        explanation: "Not correct. `nginx` loads certificates only when it starts or reloads."
+      - id: b
+        text: "Delete the Secret and create it again"
+        explanation: "Not correct. This does not make `nginx` reload."
+      - id: c
+        text: "Restart `harbor-core`"
+        explanation: "Not correct. `core` does not serve the public certificate."
+      - id: d
+        text: "Restart the `harbor-nginx` Deployment"
+        explanation: "Correct. The reliable step is `kubectl rollout restart deployment/harbor-nginx`."
+    correct_option: d
+    explanation: "The reliable step is `kubectl rollout restart deployment/harbor-nginx`."
+
+  - id: ats105-final-q15
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Say what the key encrypts"
+    source_readings:
+      - sections/section-010/module-03/course-02-the-encryption-key.md
+    prompt: "What does `core` use the `secretKey` for?"
+    options:
+      - id: a
+        text: "Signing image manifests"
+        explanation: "Not correct. Signatures use a different mechanism."
+      - id: b
+        text: "Encrypting credentials that Harbor stores in its database"
+        explanation: "Correct. A restored database with a different key fails when a feature needs a stored credential."
+      - id: c
+        text: "Encrypting the layers in the bucket"
+        explanation: "Not correct. Layers are not encrypted by this key."
+      - id: d
+        text: "Encrypting the TLS connection"
+        explanation: "Not correct. TLS uses certificates."
+    correct_option: b
+    explanation: "A restored database with a different key fails when a feature needs a stored credential."
+
+  - id: ats105-final-q16
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know when a pod reads a Secret"
+    source_readings:
+      - sections/section-010/module-03/course-03-rotating-a-credential.md
+    prompt: "You change the content of a Secret that the chart does not own. When does a running pod use the new value?"
+    options:
+      - id: a
+        text: "Immediately, through the environment"
+        explanation: "Not correct. An environment variable is read once, at start."
+      - id: b
+        text: "After the next probe"
+        explanation: "Not correct. Probes do not reload Secrets."
+      - id: c
+        text: "After the next `helm upgrade` without changes"
+        explanation: "Not correct. Helm sees no change and restarts nothing."
+      - id: d
+        text: "After the pod restarts"
+        explanation: "Correct. A pod reads a Secret once, at start, so the Deployments must restart."
+    correct_option: d
+    explanation: "A pod reads a Secret once, at start, so the Deployments must restart."
+
+  - id: ats105-final-q17
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know when the chart creates a budget"
+    source_readings:
+      - sections/section-020/module-02/course-01-disruptions-and-pod-disruption-budgets.md
+    prompt: "When does the chart render a PodDisruptionBudget for a component?"
+    options:
+      - id: a
+        text: "Always, for every component"
+        explanation: "Not correct. The default is `false`."
+      - id: b
+        text: "When `replicas` is 1"
+        explanation: "Not correct. A budget needs more than one replica."
+      - id: c
+        text: "When `topologySpreadConstraints` is set"
+        explanation: "Not correct. The two settings are independent."
+      - id: d
+        text: "When `podDisruptionBudget.enabled` is true and the component has more than one replica"
+        explanation: "Correct. Both conditions must hold."
+    correct_option: d
+    explanation: "Both conditions must hold."
+
+  - id: ats105-final-q18
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know what the chart adds"
+    source_readings:
+      - sections/section-020/module-02/course-02-spreading-replicas-across-nodes.md
+    prompt: "Which part of the constraint does the chart add for you?"
+    options:
+      - id: a
+        text: "The topology key"
+        explanation: "Not correct. You write it."
+      - id: b
+        text: "The `maxSkew`"
+        explanation: "Not correct. You write it."
+      - id: c
+        text: "The label selector of the component"
+        explanation: "Correct. The values hold only `maxSkew`, `topologyKey` and `whenUnsatisfiable`."
+      - id: d
+        text: "The node label"
+        explanation: "Not correct. Nodes carry their own labels."
+    correct_option: c
+    explanation: "The values hold only `maxSkew`, `topologyKey` and `whenUnsatisfiable`."

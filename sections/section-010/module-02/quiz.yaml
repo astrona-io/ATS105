@@ -1,0 +1,245 @@
+# Knowledge check for module 02 of section 010. Listed in astrona.yaml as a `type: quiz` entry after the module summary.
+schema_version: 1
+kind: question_bank
+id: ats105-010-02
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: module-02
+  title: "Exposing Harbor, Certificates And Internal TLS"
+placement:
+  position: after
+  reading: sections/section-010/module-02/course-05-summary.md
+questions:
+  - id: ats105-010-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name where the proxy sends registry paths"
+    source_readings:
+      - sections/section-010/module-02/course-01-how-harbor-is-exposed.md
+    prompt: "Which Harbor component receives requests for the path `/v2/` from the `nginx` proxy?"
+    options:
+      - id: a
+        text: "`registry`"
+        explanation: "Correct. The proxy sends `/v2/` to `registry`."
+      - id: b
+        text: "`core`"
+        explanation: "Not correct. `core` receives `/api/`, `/service/` and `/c/`."
+      - id: c
+        text: "`portal`"
+        explanation: "Not correct. `portal` receives everything that is not routed elsewhere."
+      - id: d
+        text: "`jobservice`"
+        explanation: "Not correct. `jobservice` is not reached through the public proxy."
+    correct_option: a
+    explanation: "The proxy sends `/v2/` to `registry`."
+
+  - id: ats105-010-02-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "List the expose types"
+    source_readings:
+      - sections/section-010/module-02/course-01-how-harbor-is-exposed.md
+    prompt: "Which list holds the values the chart accepts for `expose.type`?"
+    options:
+      - id: a
+        text: "`ingress`, `service`, `gateway`"
+        explanation: "Not correct. `service` and `gateway` are not values of `expose.type`."
+      - id: b
+        text: "`ingress`, `clusterIP`, `hostPort`"
+        explanation: "Not correct. `hostPort` is not a value."
+      - id: c
+        text: "`clusterIP`, `nodePort`, `loadBalancer`"
+        explanation: "Not correct. This list leaves out `ingress` and `route`."
+      - id: d
+        text: "`ingress`, `clusterIP`, `nodePort`, `loadBalancer`, `route`"
+        explanation: "Correct. The chart supports five types."
+    correct_option: d
+    explanation: "The chart supports five types."
+
+  - id: ats105-010-02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain what externalURL changes"
+    source_readings:
+      - sections/section-010/module-02/course-01-how-harbor-is-exposed.md
+    prompt: "What does `externalURL` change?"
+    options:
+      - id: a
+        text: "How Kubernetes publishes the proxy"
+        explanation: "Not correct. That is `expose.type`."
+      - id: b
+        text: "The port `nginx` listens on"
+        explanation: "Not correct. The ports are set under `expose`."
+      - id: c
+        text: "The address Harbor tells clients to use, such as the token realm"
+        explanation: "Correct. `externalURL` builds the token realm and the login commands."
+      - id: d
+        text: "The certificate that `nginx` serves"
+        explanation: "Not correct. The certificate comes from `expose.tls`."
+    correct_option: c
+    explanation: "`externalURL` builds the token realm and the login commands."
+
+  - id: ats105-010-02-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pick the certificate source that survives an upgrade"
+    source_readings:
+      - sections/section-010/module-02/course-02-certificates-for-clients.md
+    prompt: "Which `expose.tls.certSource` keeps the same certificate across `helm upgrade`?"
+    options:
+      - id: a
+        text: "`auto`"
+        explanation: "Not correct. `auto` generates a new certificate on every render."
+      - id: b
+        text: "`secret`"
+        explanation: "Correct. With `secret` the certificate stays in a Secret the chart does not change."
+      - id: c
+        text: "`none`"
+        explanation: "Not correct. `none` configures no certificate on the Ingress."
+      - id: d
+        text: "`generated`"
+        explanation: "Not correct. This is not a valid value."
+    correct_option: b
+    explanation: "With `secret` the certificate stays in a Secret the chart does not change."
+
+  - id: ats105-010-02-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the endpoint that serves the CA"
+    source_readings:
+      - sections/section-010/module-02/course-02-certificates-for-clients.md
+    prompt: "Which value lets `core` serve the signing CA at `/api/v2.0/systeminfo/getcert`?"
+    options:
+      - id: a
+        text: "`caSecretName`"
+        explanation: "Correct. `caSecretName` names a Secret with a `ca.crt` key that `core` mounts."
+      - id: b
+        text: "`externalURL`"
+        explanation: "Not correct. It sets the public address."
+      - id: c
+        text: "`expose.tls.secret.secretName`"
+        explanation: "Not correct. It names the certificate Secret, not the CA served by `core`."
+      - id: d
+        text: "`internalTLS.trustCa`"
+        explanation: "Not correct. It applies to internal TLS with the `manual` source."
+    correct_option: a
+    explanation: "`caSecretName` names a Secret with a `ca.crt` key that `core` mounts."
+
+  - id: ats105-010-02-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Apply a replaced certificate"
+    source_readings:
+      - sections/section-010/module-02/course-02-certificates-for-clients.md
+    prompt: "After you update the Secret `harbor-tls` with a new certificate, what makes `nginx` use it reliably?"
+    options:
+      - id: a
+        text: "Wait for Kubernetes to update the mounted file"
+        explanation: "Not correct. `nginx` loads certificates only when it starts or reloads."
+      - id: b
+        text: "Delete the Secret and create it again"
+        explanation: "Not correct. This does not make `nginx` reload."
+      - id: c
+        text: "Restart `harbor-core`"
+        explanation: "Not correct. `core` does not serve the public certificate."
+      - id: d
+        text: "Restart the `harbor-nginx` Deployment"
+        explanation: "Correct. The reliable step is `kubectl rollout restart deployment/harbor-nginx`."
+    correct_option: d
+    explanation: "The reliable step is `kubectl rollout restart deployment/harbor-nginx`."
+
+  - id: ats105-010-02-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the effect of internal TLS"
+    source_readings:
+      - sections/section-010/module-02/course-03-encrypting-traffic-between-components.md
+    prompt: "What changes in the `core` ConfigMap when `internalTLS.enabled` becomes `true`?"
+    options:
+      - id: a
+        text: "`PORT` changes from `8443` to `8080`"
+        explanation: "Not correct. The direction is the opposite."
+      - id: b
+        text: "`PORT` stays `8080` and a sidecar adds TLS"
+        explanation: "Not correct. The chart has no sidecar for this."
+      - id: c
+        text: "`PORT` changes from `8080` to `8443`"
+        explanation: "Correct. Components listen on `8443`, and the Service port is named `https-web`."
+      - id: d
+        text: "`EXT_ENDPOINT` changes to `http://`"
+        explanation: "Not correct. `EXT_ENDPOINT` follows `externalURL`."
+    correct_option: c
+    explanation: "Components listen on `8443`, and the Service port is named `https-web`."
+
+  - id: ats105-010-02-q08
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Avoid dropping values on upgrade"
+    source_readings:
+      - sections/section-010/module-02/course-03-encrypting-traffic-between-components.md
+    prompt: "Why do you start an upgrade from `helm get values harbor -o yaml`?"
+    options:
+      - id: a
+        text: "Helm merges the new file with the old values"
+        explanation: "Not correct. Only `--reuse-values` merges."
+      - id: b
+        text: "A `helm upgrade` with a values file replaces the values you passed before"
+        explanation: "Correct. A file with only the new block would drop the external service settings."
+      - id: c
+        text: "The chart repository stores the values"
+        explanation: "Not correct. Helm stores them with the release, but a new file replaces them."
+      - id: d
+        text: "Helm refuses to upgrade without it"
+        explanation: "Not correct. Helm does not require it."
+    correct_option: b
+    explanation: "A file with only the new block would drop the external service settings."
+
+  - id: ats105-010-02-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Set the proxy bypass list"
+    source_readings:
+      - sections/section-010/module-02/course-04-proxies-large-pushes-and-update-strategy.md
+    prompt: "What must `proxy.noProxy` include when you set an outbound proxy for Harbor?"
+    options:
+      - id: a
+        text: "The cluster names, such as `.svc` and `.cluster.local`"
+        explanation: "Correct. Without them Harbor sends internal requests through the proxy and they fail."
+      - id: b
+        text: "The public address of the proxy"
+        explanation: "Not correct. This is not needed in the bypass list."
+      - id: c
+        text: "Only `localhost`"
+        explanation: "Not correct. Internal calls to Services would go through the proxy."
+      - id: d
+        text: "Nothing, the chart adds them"
+        explanation: "Not correct. The default list does not cover the cluster names."
+    correct_option: a
+    explanation: "Without them Harbor sends internal requests through the proxy and they fail."
+
+  - id: ats105-010-02-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Find the cause of a 413"
+    source_readings:
+      - sections/section-010/module-02/course-04-proxies-large-pushes-and-update-strategy.md
+    prompt: "A push of a large layer fails with `413 Request Entity Too Large`. What do you check first?"
+    options:
+      - id: a
+        text: "The Harbor storage quota"
+        explanation: "Not correct. A quota gives a different error."
+      - id: b
+        text: "The `externalURL` port"
+        explanation: "Not correct. A wrong port causes a token error."
+      - id: c
+        text: "The Redis memory limit"
+        explanation: "Not correct. Redis does not limit request bodies."
+      - id: d
+        text: "The body-size limit of the ingress, which the chart sets to `0`"
+        explanation: "Correct. An NGINX-based ingress controller refuses large bodies unless `proxy-body-size` is `0`."
+    correct_option: d
+    explanation: "An NGINX-based ingress controller refuses large bodies unless `proxy-body-size` is `0`."

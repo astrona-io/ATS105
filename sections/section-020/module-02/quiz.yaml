@@ -1,0 +1,245 @@
+# Knowledge check for module 02 of section 020. Listed in astrona.yaml as a `type: quiz` entry after the module summary.
+schema_version: 1
+kind: question_bank
+id: ats105-020-02
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: module-02
+  title: "Keep Harbor Replicas Available During Disruptions"
+placement:
+  position: after
+  reading: sections/section-020/module-02/course-05-summary.md
+questions:
+  - id: ats105-020-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Separate disruption kinds"
+    source_readings:
+      - sections/section-020/module-02/course-01-disruptions-and-pod-disruption-budgets.md
+    prompt: "Which event does a PodDisruptionBudget limit?"
+    options:
+      - id: a
+        text: "A node drain that uses the Eviction API"
+        explanation: "Correct. A PodDisruptionBudget limits voluntary disruptions that use the Eviction API."
+      - id: b
+        text: "A node crash"
+        explanation: "Not correct. A crash is an involuntary disruption."
+      - id: c
+        text: "An out-of-memory kill"
+        explanation: "Not correct. This is an involuntary disruption."
+      - id: d
+        text: "A plain `kubectl delete pod`"
+        explanation: "Not correct. A delete does not ask the budget."
+    correct_option: a
+    explanation: "A PodDisruptionBudget limits voluntary disruptions that use the Eviction API."
+
+  - id: ats105-020-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know when the chart creates a budget"
+    source_readings:
+      - sections/section-020/module-02/course-01-disruptions-and-pod-disruption-budgets.md
+    prompt: "When does the chart render a PodDisruptionBudget for a component?"
+    options:
+      - id: a
+        text: "Always, for every component"
+        explanation: "Not correct. The default is `false`."
+      - id: b
+        text: "When `replicas` is 1"
+        explanation: "Not correct. A budget needs more than one replica."
+      - id: c
+        text: "When `topologySpreadConstraints` is set"
+        explanation: "Not correct. The two settings are independent."
+      - id: d
+        text: "When `podDisruptionBudget.enabled` is true and the component has more than one replica"
+        explanation: "Correct. Both conditions must hold."
+    correct_option: d
+    explanation: "Both conditions must hold."
+
+  - id: ats105-020-02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the default budget"
+    source_readings:
+      - sections/section-020/module-02/course-01-disruptions-and-pod-disruption-budgets.md
+    prompt: "What is the chart's default `minAvailable` for a budget?"
+    options:
+      - id: a
+        text: "0"
+        explanation: "Not correct. This would allow every pod to go."
+      - id: b
+        text: "2"
+        explanation: "Not correct. The default is 1."
+      - id: c
+        text: "1"
+        explanation: "Correct. The default `minAvailable` is 1, and `maxUnavailable` does not replace it unless `minAvailable` is `null`."
+      - id: d
+        text: "50%"
+        explanation: "Not correct. The default is a number."
+    correct_option: c
+    explanation: "The default `minAvailable` is 1, and `maxUnavailable` does not replace it unless `minAvailable` is `null`."
+
+  - id: ats105-020-02-q04
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Spot a blocking budget"
+    source_readings:
+      - sections/section-020/module-02/course-01-disruptions-and-pod-disruption-budgets.md
+    prompt: "A component has 2 replicas and `minAvailable: 2`. What does `kubectl drain` do?"
+    options:
+      - id: a
+        text: "It evicts one pod"
+        explanation: "Not correct. The budget allows none."
+      - id: b
+        text: "It waits, because the budget allows no disruption"
+        explanation: "Correct. Check `ALLOWED DISRUPTIONS` after every change."
+      - id: c
+        text: "It deletes both pods"
+        explanation: "Not correct. The Eviction API refuses."
+      - id: d
+        text: "It ignores the budget"
+        explanation: "Not correct. Drain honours budgets."
+    correct_option: b
+    explanation: "Check `ALLOWED DISRUPTIONS` after every change."
+
+  - id: ats105-020-02-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name the spread field"
+    source_readings:
+      - sections/section-020/module-02/course-02-spreading-replicas-across-nodes.md
+    prompt: "Which field of a topology spread constraint sets the largest allowed difference in pod count between groups?"
+    options:
+      - id: a
+        text: "`maxSkew`"
+        explanation: "Correct. `maxSkew` is the largest allowed difference."
+      - id: b
+        text: "`topologyKey`"
+        explanation: "Not correct. It names the node label."
+      - id: c
+        text: "`whenUnsatisfiable`"
+        explanation: "Not correct. It sets what happens when the rule fails."
+      - id: d
+        text: "`minDomains`"
+        explanation: "Not correct. It sets a minimum number of groups."
+    correct_option: a
+    explanation: "`maxSkew` is the largest allowed difference."
+
+  - id: ats105-020-02-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pick the behaviour of ScheduleAnyway"
+    source_readings:
+      - sections/section-020/module-02/course-02-spreading-replicas-across-nodes.md
+    prompt: "What does `whenUnsatisfiable: ScheduleAnyway` do?"
+    options:
+      - id: a
+        text: "It leaves the pod pending"
+        explanation: "Not correct. That is `DoNotSchedule`."
+      - id: b
+        text: "It deletes another pod"
+        explanation: "Not correct. The scheduler never does that for this field."
+      - id: c
+        text: "It fails the rollout"
+        explanation: "Not correct. The rollout continues."
+      - id: d
+        text: "It places the pod even if the rule cannot be met"
+        explanation: "Correct. `ScheduleAnyway` treats the rule as a preference."
+    correct_option: d
+    explanation: "`ScheduleAnyway` treats the rule as a preference."
+
+  - id: ats105-020-02-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know what the chart adds"
+    source_readings:
+      - sections/section-020/module-02/course-02-spreading-replicas-across-nodes.md
+    prompt: "Which part of the constraint does the chart add for you?"
+    options:
+      - id: a
+        text: "The topology key"
+        explanation: "Not correct. You write it."
+      - id: b
+        text: "The `maxSkew`"
+        explanation: "Not correct. You write it."
+      - id: c
+        text: "The label selector of the component"
+        explanation: "Correct. The values hold only `maxSkew`, `topologyKey` and `whenUnsatisfiable`."
+      - id: d
+        text: "The node label"
+        explanation: "Not correct. Nodes carry their own labels."
+    correct_option: c
+    explanation: "The values hold only `maxSkew`, `topologyKey` and `whenUnsatisfiable`."
+
+  - id: ats105-020-02-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Compute rolling update limits"
+    source_readings:
+      - sections/section-020/module-02/course-03-rolling-updates-probes-and-resource-requests.md
+    prompt: "With 2 replicas and the default 25 percent limits, how many pods can be missing during a rolling update?"
+    options:
+      - id: a
+        text: "One"
+        explanation: "Not correct. Kubernetes rounds `maxUnavailable` down."
+      - id: b
+        text: "None, because `maxUnavailable` rounds down to 0"
+        explanation: "Correct. One extra pod starts first because `maxSurge` rounds up to 1."
+      - id: c
+        text: "Two"
+        explanation: "Not correct. This would stop the service."
+      - id: d
+        text: "25 percent of nodes"
+        explanation: "Not correct. The limit applies to pods."
+    correct_option: b
+    explanation: "One extra pod starts first because `maxSurge` rounds up to 1."
+
+  - id: ats105-020-02-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Size database connections"
+    source_readings:
+      - sections/section-020/module-02/course-04-connection-budgets-and-redis-failover.md
+    prompt: "What do you compare with PostgreSQL `max_connections` when you scale `core`?"
+    options:
+      - id: a
+        text: "Replicas, including the surge pod, times `maxOpenConns`"
+        explanation: "Correct. Each `core` pod holds its own pool."
+      - id: b
+        text: "`maxIdleConns` only"
+        explanation: "Not correct. The ceiling is `maxOpenConns`."
+      - id: c
+        text: "The number of nodes"
+        explanation: "Not correct. Connections belong to pods."
+      - id: d
+        text: "The Redis connection count"
+        explanation: "Not correct. Redis is a separate server."
+    correct_option: a
+    explanation: "Each `core` pod holds its own pool."
+
+  - id: ats105-020-02-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Select the Sentinel setting"
+    source_readings:
+      - sections/section-020/module-02/course-04-connection-budgets-and-redis-failover.md
+    prompt: "Which value tells Harbor to use the master set of Redis Sentinel?"
+    options:
+      - id: a
+        text: "`redis.external.cluster`"
+        explanation: "Not correct. The chart does not support Redis Cluster."
+      - id: b
+        text: "`redis.external.tlsOptions`"
+        explanation: "Not correct. It configures TLS."
+      - id: c
+        text: "`redis.type: sentinel`"
+        explanation: "Not correct. The type is `external`."
+      - id: d
+        text: "`redis.external.sentinelMasterSet`"
+        explanation: "Correct. `addr` lists the Sentinel addresses and `sentinelMasterSet` names the master set."
+    correct_option: d
+    explanation: "`addr` lists the Sentinel addresses and `sentinelMasterSet` names the master set."

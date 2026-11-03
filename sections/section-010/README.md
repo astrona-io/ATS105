@@ -28,6 +28,24 @@ The playground holds Harbor on its internal services and, next to it, an empty P
 3. Object Storage For Images And Job Logs, followed by the lab **Move Harbor To External PostgreSQL, Redis And S3**
 4. Summary
 
+### 2. Expose Harbor And Secure Its Traffic
+
+The playground holds Harbor on the external services, served with a certificate from a Secret.
+
+1. How Harbor Is Exposed
+2. Certificates For Clients
+3. Encrypting Traffic Between Components, followed by the lab **Enable Internal TLS Between Harbor Components**
+4. Proxies, Large Pushes And Update Strategy
+5. Summary
+
+### 3. Harbor Secrets, Keys And Credentials
+
+1. Which Credentials Harbor Holds
+2. The Encryption Key
+3. Rotating A Credential, followed by the lab **Rotate The Harbor Database Password**
+4. Generated Secrets And The Admin Password
+5. Summary
+
 ## Section capstone: Repair A Harbor That Cannot Reach Its Services
 
 Someone moved Harbor to the external services and stopped halfway through the checks. Harbor does not become healthy, and three separate faults stand between it and its database, Redis and bucket. Work the capstone after the module lab.

@@ -1,0 +1,245 @@
+# Knowledge check for module 03 of section 010. Listed in astrona.yaml as a `type: quiz` entry after the module summary.
+schema_version: 1
+kind: question_bank
+id: ats105-010-03
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: module-03
+  title: "Harbor Secrets, Keys And Credentials"
+placement:
+  position: after
+  reading: sections/section-010/module-03/course-05-summary.md
+questions:
+  - id: ats105-010-03-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name the key for the database password"
+    source_readings:
+      - sections/section-010/module-03/course-01-which-credentials-harbor-holds.md
+    prompt: "Which key of the Secret in `database.external.existingSecret` holds the database password?"
+    options:
+      - id: a
+        text: "`password`"
+        explanation: "Correct. The chart reads the key `password`."
+      - id: b
+        text: "`POSTGRESQL_PASSWORD`"
+        explanation: "Not correct. That is the environment variable inside `core`."
+      - id: c
+        text: "`db-password`"
+        explanation: "Not correct. The chart does not read this key."
+      - id: d
+        text: "`secretKey`"
+        explanation: "Not correct. It holds the encryption key."
+    correct_option: a
+    explanation: "The chart reads the key `password`."
+
+  - id: ats105-010-03-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name the key for the S3 access key"
+    source_readings:
+      - sections/section-010/module-03/course-01-which-credentials-harbor-holds.md
+    prompt: "Which key names the S3 access key in the Secret used by `persistence.imageChartStorage.s3.existingSecret`?"
+    options:
+      - id: a
+        text: "`accesskey`"
+        explanation: "Not correct. The chart expects exact upper-case names."
+      - id: b
+        text: "`AWS_ACCESS_KEY_ID`"
+        explanation: "Not correct. The registry does not read this name from the Secret."
+      - id: c
+        text: "`s3-user`"
+        explanation: "Not correct. It is not a chart key."
+      - id: d
+        text: "`REGISTRY_STORAGE_S3_ACCESSKEY`"
+        explanation: "Correct. The keys are `REGISTRY_STORAGE_S3_ACCESSKEY` and `REGISTRY_STORAGE_S3_SECRETKEY`."
+    correct_option: d
+    explanation: "The keys are `REGISTRY_STORAGE_S3_ACCESSKEY` and `REGISTRY_STORAGE_S3_SECRETKEY`."
+
+  - id: ats105-010-03-q03
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "State the length of secretKey"
+    source_readings:
+      - sections/section-010/module-03/course-02-the-encryption-key.md
+    prompt: "How long is the Harbor `secretKey`?"
+    options:
+      - id: a
+        text: "8 characters"
+        explanation: "Not correct. This is too short."
+      - id: b
+        text: "32 characters"
+        explanation: "Not correct. This is the length of some other keys."
+      - id: c
+        text: "16 characters"
+        explanation: "Correct. The key has 16 characters."
+      - id: d
+        text: "Any length"
+        explanation: "Not correct. Harbor expects exactly 16."
+    correct_option: c
+    explanation: "The key has 16 characters."
+
+  - id: ats105-010-03-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Say what the key encrypts"
+    source_readings:
+      - sections/section-010/module-03/course-02-the-encryption-key.md
+    prompt: "What does `core` use the `secretKey` for?"
+    options:
+      - id: a
+        text: "Signing image manifests"
+        explanation: "Not correct. Signatures use a different mechanism."
+      - id: b
+        text: "Encrypting credentials that Harbor stores in its database"
+        explanation: "Correct. A restored database with a different key fails when a feature needs a stored credential."
+      - id: c
+        text: "Encrypting the layers in the bucket"
+        explanation: "Not correct. Layers are not encrypted by this key."
+      - id: d
+        text: "Encrypting the TLS connection"
+        explanation: "Not correct. TLS uses certificates."
+    correct_option: b
+    explanation: "A restored database with a different key fails when a feature needs a stored credential."
+
+  - id: ats105-010-03-q05
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Predict a restore with a wrong key"
+    source_readings:
+      - sections/section-010/module-03/course-02-the-encryption-key.md
+    prompt: "You restore the database but Harbor starts with a new `secretKey`. What do you see?"
+    options:
+      - id: a
+        text: "Harbor looks healthy and fails when it needs a stored credential"
+        explanation: "Correct. Back up `harbor-secretkey` together with the database."
+      - id: b
+        text: "Harbor refuses to start"
+        explanation: "Not correct. The health check does not read the stored credentials."
+      - id: c
+        text: "Harbor creates a new key and re-encrypts"
+        explanation: "Not correct. Harbor never re-encrypts with a new key."
+      - id: d
+        text: "Pushes fail with `401`"
+        explanation: "Not correct. Pushes use other credentials."
+    correct_option: a
+    explanation: "Back up `harbor-secretkey` together with the database."
+
+  - id: ats105-010-03-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know when a pod reads a Secret"
+    source_readings:
+      - sections/section-010/module-03/course-03-rotating-a-credential.md
+    prompt: "You change the content of a Secret that the chart does not own. When does a running pod use the new value?"
+    options:
+      - id: a
+        text: "Immediately, through the environment"
+        explanation: "Not correct. An environment variable is read once, at start."
+      - id: b
+        text: "After the next probe"
+        explanation: "Not correct. Probes do not reload Secrets."
+      - id: c
+        text: "After the next `helm upgrade` without changes"
+        explanation: "Not correct. Helm sees no change and restarts nothing."
+      - id: d
+        text: "After the pod restarts"
+        explanation: "Correct. A pod reads a Secret once, at start, so the Deployments must restart."
+    correct_option: d
+    explanation: "A pod reads a Secret once, at start, so the Deployments must restart."
+
+  - id: ats105-010-03-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Order the rotation"
+    source_readings:
+      - sections/section-010/module-03/course-03-rotating-a-credential.md
+    prompt: "In which order do you rotate the database password?"
+    options:
+      - id: a
+        text: "Update the Secret, restart the Deployments, change the role"
+        explanation: "Not correct. Pods would start with a password the database does not accept."
+      - id: b
+        text: "Restart the Deployments, update the Secret, change the role"
+        explanation: "Not correct. Pods would restart on the old Secret."
+      - id: c
+        text: "Change the role in PostgreSQL, update the Secret, restart the Deployments, prove the result"
+        explanation: "Correct. The database accepts the new password first, so the restarted pods can connect."
+      - id: d
+        text: "Change the Helm values, then the Secret"
+        explanation: "Not correct. The password must never be in the Helm values."
+    correct_option: c
+    explanation: "The database accepts the new password first, so the restarted pods can connect."
+
+  - id: ats105-010-03-q08
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Prove the new password is in use"
+    source_readings:
+      - sections/section-010/module-03/course-03-rotating-a-credential.md
+    prompt: "Which proof shows that `core` really uses the new database password?"
+    options:
+      - id: a
+        text: "The Deployment shows `Available`"
+        explanation: "Not correct. This says nothing about the password."
+      - id: b
+        text: "Compare the checksum of `POSTGRESQL_PASSWORD` in the pod with the Secret, and log in over the network with the new and the old password"
+        explanation: "Correct. The checksum shows the value in the pod, and a login shows what the server accepts."
+      - id: c
+        text: "Harbor's `/health` endpoint is `healthy`"
+        explanation: "Not correct. Health can pass while a pod still holds the old value."
+      - id: d
+        text: "The Secret has a new `resourceVersion`"
+        explanation: "Not correct. This shows only that the Secret changed."
+    correct_option: b
+    explanation: "The checksum shows the value in the pod, and a login shows what the server accepts."
+
+  - id: ats105-010-03-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Understand generated Secrets"
+    source_readings:
+      - sections/section-010/module-03/course-04-generated-secrets-and-the-admin-password.md
+    prompt: "Why do chart-generated shared secrets survive `helm upgrade`?"
+    options:
+      - id: a
+        text: "The chart uses the Helm `lookup` function to read the existing value"
+        explanation: "Correct. Rendering without cluster access, such as `helm template`, creates new values each time."
+      - id: b
+        text: "The chart stores them in the values file"
+        explanation: "Not correct. The values file holds only what you passed."
+      - id: c
+        text: "Kubernetes never replaces Secrets"
+        explanation: "Not correct. The chart can replace them."
+      - id: d
+        text: "The secrets are fixed in the image"
+        explanation: "Not correct. They are generated at render time."
+    correct_option: a
+    explanation: "Rendering without cluster access, such as `helm template`, creates new values each time."
+
+  - id: ats105-010-03-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know when the admin password applies"
+    source_readings:
+      - sections/section-010/module-03/course-04-generated-secrets-and-the-admin-password.md
+    prompt: "You change `harborAdminPassword` in the values and upgrade. What happens to the password of `admin`?"
+    options:
+      - id: a
+        text: "It changes at once"
+        explanation: "Not correct. The value applies only at the first start."
+      - id: b
+        text: "Harbor restarts and resets it"
+        explanation: "Not correct. Harbor does not reset an existing user."
+      - id: c
+        text: "The upgrade fails"
+        explanation: "Not correct. The upgrade succeeds."
+      - id: d
+        text: "Nothing, because it is read only when Harbor creates the user"
+        explanation: "Correct. Change the password through the Harbor API or portal after the first start."
+    correct_option: d
+    explanation: "Change the password through the Harbor API or portal after the first start."

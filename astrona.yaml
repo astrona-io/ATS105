@@ -104,6 +104,92 @@ modules:
         path: sections/section-010/module-01/course-04-summary.md
 
       - type: reading
+        title: "Expose Harbor And Secure Its Traffic"
+        path: sections/section-010/module-02/course.md
+      - type: reading
+        title: "How Harbor Is Exposed"
+        path: sections/section-010/module-02/course-01-how-harbor-is-exposed.md
+      - type: reading
+        title: "Certificates For Clients"
+        path: sections/section-010/module-02/course-02-certificates-for-clients.md
+      - type: reading
+        title: "Encrypting Traffic Between Components"
+        path: sections/section-010/module-02/course-03-encrypting-traffic-between-components.md
+      - type: reading
+        title: "Question"
+        path: sections/section-010/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Enable Internal TLS Between Harbor Components Lab"
+        path: sections/section-010/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: external-services
+        task_kind: build
+        tags: [harbor-helm, values-yaml, tls-certificate, kubernetes-secret, health]
+        learning_goals:
+          - Enable internalTLS in the harbor-helm values without dropping the existing settings
+          - Show that core moved to port 8443 and that each component has its internal certificate Secret
+          - Prove with a push and a pull that Harbor still works
+        resources:
+          - name: "Deploying Harbor with high availability via Helm"
+            url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: reading
+        title: "Proxies, Large Pushes And Update Strategy"
+        path: sections/section-010/module-02/course-04-proxies-large-pushes-and-update-strategy.md
+      - type: reading
+        title: "Summary"
+        path: sections/section-010/module-02/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Exposing Harbor, Certificates And Internal TLS"
+        path: sections/section-010/module-02/quiz.yaml
+        pass_score: 70
+
+      - type: reading
+        title: "Harbor Secrets, Keys And Credentials"
+        path: sections/section-010/module-03/course.md
+      - type: reading
+        title: "Which Credentials Harbor Holds"
+        path: sections/section-010/module-03/course-01-which-credentials-harbor-holds.md
+      - type: reading
+        title: "The Encryption Key"
+        path: sections/section-010/module-03/course-02-the-encryption-key.md
+      - type: reading
+        title: "Rotating A Credential"
+        path: sections/section-010/module-03/course-03-rotating-a-credential.md
+      - type: reading
+        title: "Question"
+        path: sections/section-010/module-03/labs/lab-01/question.md
+      - type: lab
+        title: "Rotate The Harbor Database Password Lab"
+        path: sections/section-010/module-03/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: external-services
+        task_kind: troubleshooting
+        tags: [harbor-helm, external-database, kubernetes-secret, secret-key, health]
+        learning_goals:
+          - Find every Deployment that reads a Secret before you change it
+          - Change the PostgreSQL role, the Secret and the pods in an order that keeps Harbor available
+          - Prove with the pod environment and a network login that the new password is in use
+        resources:
+          - name: "Deploying Harbor with high availability via Helm"
+            url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: reading
+        title: "Generated Secrets And The Admin Password"
+        path: sections/section-010/module-03/course-04-generated-secrets-and-the-admin-password.md
+      - type: reading
+        title: "Summary"
+        path: sections/section-010/module-03/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Harbor Secrets, Keys And Credentials"
+        path: sections/section-010/module-03/quiz.yaml
+        pass_score: 70
+
+      - type: reading
         title: Question
         path: sections/section-010/capstone/labs/lab-01/question.md
       - type: lab
@@ -171,6 +257,49 @@ modules:
       - type: reading
         title: Summary
         path: sections/section-020/module-01/course-03-summary.md
+
+      - type: reading
+        title: "Keep Harbor Replicas Available During Disruptions"
+        path: sections/section-020/module-02/course.md
+      - type: reading
+        title: "Disruptions And Pod Disruption Budgets"
+        path: sections/section-020/module-02/course-01-disruptions-and-pod-disruption-budgets.md
+      - type: reading
+        title: "Spreading Replicas Across Nodes"
+        path: sections/section-020/module-02/course-02-spreading-replicas-across-nodes.md
+      - type: reading
+        title: "Question"
+        path: sections/section-020/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Spread And Protect Harbor's Replicas Lab"
+        path: sections/section-020/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: high-availability
+        task_kind: build
+        tags: [harbor-helm, values-yaml, replicas, health]
+        learning_goals:
+          - Enable a PodDisruptionBudget with minAvailable 1 for each Harbor component through the Helm values
+          - Add a hostname topology spread constraint to core and registry
+          - Prove the budgets allow a disruption and that pushes and pulls keep working
+        resources:
+          - name: "Deploying Harbor with high availability via Helm"
+            url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
+          - name: "harbor-helm values.yaml (v1.19.4)"
+            url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: reading
+        title: "Rolling Updates, Probes And Resource Requests"
+        path: sections/section-020/module-02/course-03-rolling-updates-probes-and-resource-requests.md
+      - type: reading
+        title: "Connection Budgets And Redis Failover"
+        path: sections/section-020/module-02/course-04-connection-budgets-and-redis-failover.md
+      - type: reading
+        title: "Summary"
+        path: sections/section-020/module-02/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Keep Harbor Replicas Available During Disruptions"
+        path: sections/section-020/module-02/quiz.yaml
+        pass_score: 70
 
       - type: reading
         title: Question
