@@ -123,6 +123,10 @@ modules:
             url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
           - name: "harbor-helm values.yaml (v1.19.4)"
             url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: quiz
+        title: "Knowledge Check: Harbor On External Services"
+        path: sections/section-010/quiz.yaml
+        pass_score: 70
 
   - id: module-020
     title: "High Availability"
@@ -188,6 +192,10 @@ modules:
             url: https://goharbor.io/docs/2.15.0/install-config/harbor-ha-helm/
           - name: "harbor-helm values.yaml (v1.19.4)"
             url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: quiz
+        title: "Knowledge Check: High Availability"
+        path: sections/section-020/quiz.yaml
+        pass_score: 70
 
   - id: module-030
     title: "Backup And Restore"
@@ -254,6 +262,10 @@ modules:
             url: https://goharbor.io/docs/2.15.0/administration/upgrade/helm-upgrade/
           - name: "harbor-helm values.yaml (v1.19.4)"
             url: https://github.com/goharbor/harbor-helm/blob/v1.19.4/values.yaml
+      - type: quiz
+        title: "Knowledge Check: Backup And Restore"
+        path: sections/section-030/quiz.yaml
+        pass_score: 70
 
   - id: module-040
     title: "Upgrades And Database Migration"
@@ -325,3 +337,11 @@ modules:
             url: https://goharbor.io/docs/2.15.0/administration/general-settings/
           - name: "Upgrading Harbor deployed with Helm"
             url: https://goharbor.io/docs/2.15.0/administration/upgrade/helm-upgrade/
+      - type: quiz
+        title: "Knowledge Check: Upgrades And Database Migration"
+        path: sections/section-040/quiz.yaml
+        pass_score: 70
+      - type: quiz
+        title: "Final Domain Quiz"
+        path: sections/final-domain-quiz.yaml
+        pass_score: 70

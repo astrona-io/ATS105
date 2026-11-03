@@ -1,0 +1,245 @@
+# Knowledge check for section 030. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats105-030
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-030
+  title: "Backup And Restore"
+placement:
+  position: after
+  reading: sections/section-030/capstone/labs/lab-01/question.md
+questions:
+  - id: ats105-030-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Define secretKey"
+    source_readings:
+      - sections/section-030/module-01/course-01-what-to-back-up.md
+    prompt: "What is Harbor's `secretKey`?"
+    options:
+      - id: a
+        text: "The password of the `admin` user."
+        explanation: "Not correct. That is `harborAdminPassword`."
+      - id: b
+        text: "The private key of the TLS certificate."
+        explanation: "Not correct. The certificate has its own Secret."
+      - id: c
+        text: "A 16-character key Harbor uses to encrypt secrets it stores in its database."
+        explanation: "Correct. An example is a remote registry endpoint password."
+      - id: d
+        text: "The S3 access key of the registry."
+        explanation: "Not correct. S3 keys are in the Secret `harbor-s3`."
+    correct_option: c
+    explanation: "Correct. An example is a remote registry endpoint password."
+
+  - id: ats105-030-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict a restore with a wrong secretKey"
+    source_readings:
+      - sections/section-030/module-01/course-01-what-to-back-up.md
+    prompt: "Harbor is restored with a new `secretKey`. What happens?"
+    options:
+      - id: a
+        text: "Harbor reads the rows but cannot decrypt stored passwords, so replication to endpoints fails."
+        explanation: "Correct. The dump holds the passwords only in encrypted form."
+      - id: b
+        text: "Harbor refuses to start."
+        explanation: "Not correct. It starts and shows its data."
+      - id: c
+        text: "Harbor generates new passwords for every endpoint."
+        explanation: "Not correct. It cannot recover the old ones."
+      - id: d
+        text: "Only the `admin` login stops working."
+        explanation: "Not correct. The problem is stored endpoint passwords."
+    correct_option: a
+    explanation: "Correct. The dump holds the passwords only in encrypted form."
+
+  - id: ats105-030-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Protect the certificate"
+    source_readings:
+      - sections/section-030/module-01/course-01-what-to-back-up.md
+    prompt: "Why does the course keep the certificate in the Secret `harbor-tls`?"
+    options:
+      - id: a
+        text: "The chart cannot serve HTTPS without a Secret."
+        explanation: "Not correct. The chart can generate a certificate."
+      - id: b
+        text: "PostgreSQL requires the certificate in a Secret."
+        explanation: "Not correct. The database does not use it."
+      - id: c
+        text: "Helm stores certificates only in Secrets."
+        explanation: "Not correct. Helm has no such rule."
+      - id: d
+        text: "A chart-generated certificate is replaced on upgrade or reinstall, and clients stop trusting the new one."
+        explanation: "Correct. A Secret you own stays the same."
+    correct_option: d
+    explanation: "Correct. A Secret you own stays the same."
+
+  - id: ats105-030-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Take consistent backups"
+    source_readings:
+      - sections/section-030/module-01/course-01-what-to-back-up.md
+    prompt: "How do you keep the database dump and the storage copy consistent on a busy Harbor?"
+    options:
+      - id: a
+        text: "Take the storage copy a day after the dump."
+        explanation: "Not correct. New pushes would be missing from one of them."
+      - id: b
+        text: "Take them one after the other with no pushes in between, for example in read-only mode."
+        explanation: "Correct. The dump lists digests that the storage copy must contain."
+      - id: c
+        text: "Back up only the storage; the database can be rebuilt."
+        explanation: "Not correct. The database cannot be rebuilt."
+      - id: d
+        text: "Stop Redis during the dump."
+        explanation: "Not correct. Redis does not hold the records."
+    correct_option: b
+    explanation: "Correct. The dump lists digests that the storage copy must contain."
+
+  - id: ats105-030-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read a pg_dump command"
+    source_readings:
+      - sections/section-030/module-01/course-01-what-to-back-up.md
+    prompt: "What does `pg_dump -Fc` write?"
+    options:
+      - id: a
+        text: "A plain SQL text file for `psql` only."
+        explanation: "Not correct. Plain format is `-Fp`."
+      - id: b
+        text: "A copy of the PostgreSQL data directory."
+        explanation: "Not correct. `pg_dump` exports one database, not files."
+      - id: c
+        text: "A snapshot of the volume."
+        explanation: "Not correct. Snapshots come from the storage layer."
+      - id: d
+        text: "A compressed dump in the custom format, which `pg_restore` reads."
+        explanation: "Correct. The custom format also allows selective restore."
+    correct_option: d
+    explanation: "Correct. The custom format also allows selective restore."
+
+  - id: ats105-030-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Limit Velero's scope"
+    source_readings:
+      - sections/section-030/module-01/course-01-what-to-back-up.md
+    prompt: "Harbor uses an external PostgreSQL and an external bucket. What does Velero not do for them?"
+    options:
+      - id: a
+        text: "It cannot back up Secrets."
+        explanation: "Not correct. It can back up Secrets."
+      - id: b
+        text: "It does not know what is inside them, so the dump and the bucket copy remain your job."
+        explanation: "Correct. Velero saves Kubernetes objects and volume snapshots."
+      - id: c
+        text: "It cannot back up the Helm release record."
+        explanation: "Not correct. It can include it."
+      - id: d
+        text: "It cannot back up the namespace `harbor`."
+        explanation: "Not correct. It can back up the namespace."
+    correct_option: b
+    explanation: "Correct. Velero saves Kubernetes objects and volume snapshots."
+
+  - id: ats105-030-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Order a restore"
+    source_readings:
+      - sections/section-030/module-01/course-02-a-restore-drill.md
+    prompt: "In which order does the drill restore Harbor?"
+    options:
+      - id: a
+        text: "`helm install` first, then the database dump."
+        explanation: "Not correct. The restore would collide with fresh tables."
+      - id: b
+        text: "Secrets first, then `helm install`, then storage."
+        explanation: "Not correct. Harbor would start on an empty database."
+      - id: c
+        text: "Database and storage first, then the Secrets, then `helm install`."
+        explanation: "Correct. Harbor starts on complete data."
+      - id: d
+        text: "Storage first, then `helm install`, then the Secrets."
+        explanation: "Not correct. Harbor needs the certificate and `secretKey` at start."
+    correct_option: c
+    explanation: "Correct. Harbor starts on complete data."
+
+  - id: ats105-030-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain a restore collision"
+    source_readings:
+      - sections/section-030/module-01/course-02-a-restore-drill.md
+    prompt: "Harbor is installed before `pg_restore`. What goes wrong?"
+    options:
+      - id: a
+        text: "`pg_restore` deletes the Helm release."
+        explanation: "Not correct. It only touches the database."
+      - id: b
+        text: "Harbor refuses to create tables in an existing database."
+        explanation: "Not correct. It creates its tables on first start."
+      - id: c
+        text: "The bucket is emptied by Harbor."
+        explanation: "Not correct. Harbor does not empty the bucket."
+      - id: d
+        text: "Harbor creates fresh tables, and `pg_restore` then collides with them."
+        explanation: "Correct. Restore the data before installing."
+    correct_option: d
+    explanation: "Correct. Restore the data before installing."
+
+  - id: ats105-030-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Prove a restore"
+    source_readings:
+      - sections/section-030/module-01/course-02-a-restore-drill.md
+    prompt: "Why does the drill pull the whole image and not just open the portal?"
+    options:
+      - id: a
+        text: "The portal shows only the database; a full pull proves the storage holds every layer."
+        explanation: "Correct. The digest check proves the records, the pull proves the layers."
+      - id: b
+        text: "The portal cannot show restored projects."
+        explanation: "Not correct. It shows what the database holds."
+      - id: c
+        text: "A pull restores missing layers from Redis."
+        explanation: "Not correct. Redis holds no layers."
+      - id: d
+        text: "The portal always shows an old cache."
+        explanation: "Not correct. It reads the database."
+    correct_option: a
+    explanation: "Correct. The digest check proves the records, the pull proves the layers."
+
+  - id: ats105-030-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Use dropdb correctly"
+    source_readings:
+      - sections/section-030/module-01/course-02-a-restore-drill.md
+    prompt: "Why does the drill run `dropdb` with `--maintenance-db=postgres`?"
+    options:
+      - id: a
+        text: "It makes the drop reversible."
+        explanation: "Not correct. A dropped database is gone."
+      - id: b
+        text: "It also drops the database `postgres`."
+        explanation: "Not correct. It only names the connection database."
+      - id: c
+        text: "The command must connect to a different database than the one it drops."
+        explanation: "Correct. It connects to `postgres` and drops `registry`."
+      - id: d
+        text: "It skips the active connections check."
+        explanation: "Not correct. It does not change that check."
+    correct_option: c
+    explanation: "Correct. It connects to `postgres` and drops `registry`."

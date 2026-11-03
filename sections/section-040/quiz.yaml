@@ -1,0 +1,245 @@
+# Knowledge check for section 040. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats105-040
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-040
+  title: "Upgrades And Database Migration"
+placement:
+  position: after
+  reading: sections/section-040/capstone/labs/lab-01/question.md
+questions:
+  - id: ats105-040-q01
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain why rollback is unsupported"
+    source_readings:
+      - sections/section-040/module-01/course-01-upgrading-the-chart.md
+    prompt: "Why does the Harbor guide say `helm rollback` is not supported?"
+    options:
+      - id: a
+        text: "Helm keeps no history of the release."
+        explanation: "Not correct. Helm keeps a release history."
+      - id: b
+        text: "The old chart versions are deleted from the repository."
+        explanation: "Not correct. The old chart versions remain."
+      - id: c
+        text: "Rollback deletes the Secrets."
+        explanation: "Not correct. Rollback does not delete Secrets."
+      - id: d
+        text: "A newer Harbor can change the database schema, and the change only goes forward."
+        explanation: "Correct. Old pods would run on a schema they do not understand."
+    correct_option: d
+    explanation: "Correct. Old pods would run on a schema they do not understand."
+
+  - id: ats105-040-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Plan the way back from a failed upgrade"
+    source_readings:
+      - sections/section-040/module-01/course-01-upgrading-the-chart.md
+    prompt: "An upgrade fails. What is the way back?"
+    options:
+      - id: a
+        text: "Run `helm rollback` to the previous revision."
+        explanation: "Not correct. It is not supported."
+      - id: b
+        text: "Restore the database backup and install the old chart again."
+        explanation: "Correct. The backup comes from step 1 of the guide."
+      - id: c
+        text: "Delete the failed pods and wait."
+        explanation: "Not correct. The schema stays changed."
+      - id: d
+        text: "Lower the image tags by hand."
+        explanation: "Not correct. Old code cannot use the new schema."
+    correct_option: b
+    explanation: "Correct. The backup comes from step 1 of the guide."
+
+  - id: ats105-040-q03
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Keep the certificate through an upgrade"
+    source_readings:
+      - sections/section-040/module-01/course-01-upgrading-the-chart.md
+    prompt: "What happens to a chart-generated certificate on `helm upgrade`?"
+    options:
+      - id: a
+        text: "It is generated again and replaces the old one, so clients that trusted it stop working."
+        explanation: "Correct. Keep the certificate in your own Secret."
+      - id: b
+        text: "It is kept unchanged."
+        explanation: "Not correct. The guide warns that it is replaced."
+      - id: c
+        text: "It is stored in the database."
+        explanation: "Not correct. It is a chart-generated object."
+      - id: d
+        text: "It is renewed only if the version changes by a minor release."
+        explanation: "Not correct. It is replaced on every upgrade."
+    correct_option: a
+    explanation: "Correct. Keep the certificate in your own Secret."
+
+  - id: ats105-040-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Upgrade with the old values"
+    source_readings:
+      - sections/section-040/module-01/course-01-upgrading-the-chart.md
+    prompt: "What happens if you upgrade without passing the old values?"
+    options:
+      - id: a
+        text: "Helm reuses the old values automatically."
+        explanation: "Not correct. Helm only does that with an extra flag."
+      - id: b
+        text: "The upgrade is refused."
+        explanation: "Not correct. Helm accepts it."
+      - id: c
+        text: "The new chart uses its defaults for every setting you did not pass."
+        explanation: "Correct. Save `helm get values` first."
+      - id: d
+        text: "Only the image tags change."
+        explanation: "Not correct. All unpassed settings fall back to defaults."
+    correct_option: c
+    explanation: "Correct. Save `helm get values` first."
+
+  - id: ats105-040-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Compare chart defaults"
+    source_readings:
+      - sections/section-040/module-01/course-01-upgrading-the-chart.md
+    prompt: "Why compare `helm show values` for the two chart versions?"
+    options:
+      - id: a
+        text: "It shows the values of the running release."
+        explanation: "Not correct. `helm get values` does that."
+      - id: b
+        text: "A changed default that you do not set yourself changes your Harbor too."
+        explanation: "Correct. Most of the diff is image tags; read the rest."
+      - id: c
+        text: "It upgrades the chart."
+        explanation: "Not correct. It only prints values."
+      - id: d
+        text: "It checks the database schema."
+        explanation: "Not correct. It does not connect to the database."
+    correct_option: b
+    explanation: "Correct. Most of the diff is image tags; read the rest."
+
+  - id: ats105-040-q06
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe read-only mode"
+    source_readings:
+      - sections/section-040/module-01/course-02-moving-the-database.md
+    prompt: "What does Harbor's read-only mode do?"
+    options:
+      - id: a
+        text: "It allows pulls and refuses pushes and deletions of repositories and tags."
+        explanation: "Correct. A push fails with a read only message."
+      - id: b
+        text: "It refuses both pulls and pushes."
+        explanation: "Not correct. Pulls keep working."
+      - id: c
+        text: "It allows pushes but refuses pulls."
+        explanation: "Not correct. Pushes are refused."
+      - id: d
+        text: "It stops `jobservice` from starting."
+        explanation: "Not correct. It is a setting, not a pod state."
+    correct_option: a
+    explanation: "Correct. A push fails with a read only message."
+
+  - id: ats105-040-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Order a database move"
+    source_readings:
+      - sections/section-040/module-01/course-02-moving-the-database.md
+    prompt: "Which order moves the database without losing writes?"
+    options:
+      - id: a
+        text: "Dump, restore, read-only on, helm upgrade, read-only off."
+        explanation: "Not correct. Pushes during the dump are lost."
+      - id: b
+        text: "Read-only on, helm upgrade, dump, restore, read-only off."
+        explanation: "Not correct. Harbor would start on an empty copy."
+      - id: c
+        text: "Read-only on, dump, restore, point Harbor at the new host, check, read-only off."
+        explanation: "Correct. Writes stop before the dump."
+      - id: d
+        text: "Dump, helm upgrade, restore, read-only on, read-only off."
+        explanation: "Not correct. Writes are open during the copy."
+    correct_option: c
+    explanation: "Correct. Writes stop before the dump."
+
+  - id: ats105-040-q08
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Check a streamed dump"
+    source_readings:
+      - sections/section-040/module-01/course-02-moving-the-database.md
+    prompt: "Why compare the file sizes with `wc -c` after copying the dump?"
+    options:
+      - id: a
+        text: "`wc -c` checks the dump for corrupt tables."
+        explanation: "Not correct. It only counts bytes."
+      - id: b
+        text: "`pg_restore` needs a file of a fixed size."
+        explanation: "Not correct. Size depends on the data."
+      - id: c
+        text: "The new server rejects dumps over a limit."
+        explanation: "Not correct. No such limit is set."
+      - id: d
+        text: "`kubectl exec` can lose the end of a stream, and a short dump makes `pg_restore` fail."
+        explanation: "Correct. If the sizes differ, copy again."
+    correct_option: d
+    explanation: "Correct. If the sizes differ, copy again."
+
+  - id: ats105-040-q09
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Free storage after deleting a repository"
+    source_readings:
+      - sections/section-040/module-01/course-03-garbage-collection.md
+    prompt: "What frees the storage of a deleted repository?"
+    options:
+      - id: a
+        text: "The delete itself, immediately."
+        explanation: "Not correct. The layers stay in the bucket."
+      - id: b
+        text: "A garbage collection run, which deletes blobs that no manifest references."
+        explanation: "Correct. Deleting only removes the records."
+      - id: c
+        text: "Read-only mode."
+        explanation: "Not correct. It does not delete blobs."
+      - id: d
+        text: "A restart of `registry`."
+        explanation: "Not correct. A restart does not run GC."
+    correct_option: b
+    explanation: "Correct. Deleting only removes the records."
+
+  - id: ats105-040-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use garbage collection safely"
+    source_readings:
+      - sections/section-040/module-01/course-03-garbage-collection.md
+    prompt: "Garbage collection ran, but the layers pushed a minute ago are still in the bucket. Why?"
+    options:
+      - id: a
+        text: "GC skips manifests and blobs from the last two hours."
+        explanation: "Correct. It never removes layers of a push in progress."
+      - id: b
+        text: "GC needs read-only mode and it was off."
+        explanation: "Not correct. GC runs without read-only mode."
+      - id: c
+        text: "The run was a dry run, so it always keeps recent blobs."
+        explanation: "Not correct. A dry run deletes nothing at all."
+      - id: d
+        text: "GC only deletes blobs on Sundays."
+        explanation: "Not correct. It runs on a schedule or on demand."
+    correct_option: a
+    explanation: "Correct. It never removes layers of a push in progress."

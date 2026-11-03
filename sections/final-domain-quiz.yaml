@@ -1,0 +1,291 @@
+# Final domain quiz. Listed in astrona.yaml as the last `type: quiz` entry.
+schema_version: 1
+kind: question_bank
+id: ats105-final
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: domain
+  id: ats105
+  title: "Harbor: Enterprise Operations, High Availability & Helm"
+placement:
+  position: after
+  reading: sections/section-040/module-01/course-04-summary.md
+questions:
+  - id: ats105-final-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Find where the registry keeps layers by default"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-harbor-keeps-where.md
+    prompt: "In the default Harbor of the playground, where do image layers live?"
+    options:
+      - id: a
+        text: "In the internal PostgreSQL database `registry`."
+        explanation: "Not correct. The database holds records and digests, not layers."
+      - id: b
+        text: "In the `harbor-redis` StatefulSet."
+        explanation: "Not correct. Redis holds queues and caches."
+      - id: c
+        text: "In a PersistentVolumeClaim named `harbor-registry`."
+        explanation: "Not correct. The playground has no PersistentVolumeClaim for the registry."
+      - id: d
+        text: "In the directory `/storage` on an `emptyDir` volume inside the registry pod."
+        explanation: "Correct. No PersistentVolumeClaim backs it, so the layers disappear with the pod."
+    correct_option: d
+    explanation: "Correct. No PersistentVolumeClaim backs it, so the layers disappear with the pod."
+
+  - id: ats105-final-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Apply the Redis database index rule"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-harbor-keeps-where.md
+    prompt: "Which Redis database index must `core` keep, according to the chart?"
+    options:
+      - id: a
+        text: "`0`"
+        explanation: "Correct. The chart defaults to `0` for `core` and says it must stay there."
+      - id: b
+        text: "`1`"
+        explanation: "Not correct. Index `1` is the default for `jobservice`."
+      - id: c
+        text: "`2`"
+        explanation: "Not correct. Index `2` is the default for `registry`."
+      - id: d
+        text: "`5`"
+        explanation: "Not correct. Index `5` is the default for the Trivy adapter."
+    correct_option: a
+    explanation: "Correct. The chart defaults to `0` for `core` and says it must stay there."
+
+  - id: ats105-final-q03
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Upgrade with the current values"
+    source_readings:
+      - sections/section-010/module-01/course-02-external-postgresql-and-redis.md
+    prompt: "What is the safe way to add the `database` and `redis` blocks to a running release?"
+    options:
+      - id: a
+        text: "Pass only the new blocks to `helm upgrade`."
+        explanation: "Not correct. The earlier settings, such as the TLS Secret, would be lost."
+      - id: b
+        text: "Save `helm get values` to a file, add the blocks and pass the file to `helm upgrade`."
+        explanation: "Correct. A values file replaces what you passed before, so you keep every old setting."
+      - id: c
+        text: "Edit the `harbor-core` ConfigMap by hand."
+        explanation: "Not correct. The next `helm upgrade` overwrites a manual edit."
+      - id: d
+        text: "Run `helm rollback` to the first revision and then add the blocks."
+        explanation: "Not correct. A rollback does not add settings."
+    correct_option: b
+    explanation: "Correct. A values file replaces what you passed before, so you keep every old setting."
+
+  - id: ats105-final-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain the failure of separate registry filesystems"
+    source_readings:
+      - sections/section-020/module-01/course-01-what-high-availability-needs.md
+    prompt: "Two `registry` replicas each use their own directory. Why do pulls fail at random?"
+    options:
+      - id: a
+        text: "The replicas elect a leader that rejects reads."
+        explanation: "Not correct. There is no leader election."
+      - id: b
+        text: "PostgreSQL deletes the artifact records of the second pod."
+        explanation: "Not correct. The records are shared and stay."
+      - id: c
+        text: "The layers of one image can be split across both pods, and a pull fails when it reaches the pod without the layer."
+        explanation: "Correct. Upload requests land on different pods."
+      - id: d
+        text: "Redis expires the layers after a short time."
+        explanation: "Not correct. Redis does not hold layers."
+    correct_option: c
+    explanation: "Correct. Upload requests land on different pods."
+
+  - id: ats105-final-q05
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Prove high availability"
+    source_readings:
+      - sections/section-020/module-01/course-02-scaling-the-components.md
+    prompt: "How do you prove that Harbor survives the loss of a pod?"
+    options:
+      - id: a
+        text: "Check that every Deployment shows `2/2`."
+        explanation: "Not correct. Ready pods do not prove shared state."
+      - id: b
+        text: "Wait for the replacement pods and then pull."
+        explanation: "Not correct. The test is requests during the outage."
+      - id: c
+        text: "Read `/api/v2.0/health` once."
+        explanation: "Not correct. Health does not test a request path through a missing pod."
+      - id: d
+        text: "Delete a `core` pod and a `registry` pod, then push and pull while they are missing."
+        explanation: "Correct. The test must break something."
+    correct_option: d
+    explanation: "Correct. The test must break something."
+
+  - id: ats105-final-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe Service behaviour during pod loss"
+    source_readings:
+      - sections/section-020/module-01/course-01-what-high-availability-needs.md
+    prompt: "A pod behind the Service `harbor` is deleted. What does Kubernetes do with traffic?"
+    options:
+      - id: a
+        text: "The Service sends requests only to ready pods, so it stops using the deleted pod within seconds."
+        explanation: "Correct. The Service follows pod readiness."
+      - id: b
+        text: "It keeps sending requests to the deleted pod until it is back."
+        explanation: "Not correct. Only ready pods get traffic."
+      - id: c
+        text: "It pauses all traffic until the replacement is ready."
+        explanation: "Not correct. Other ready pods keep serving."
+      - id: d
+        text: "It sends each request to every pod at once."
+        explanation: "Not correct. Each request goes to one pod."
+    correct_option: a
+    explanation: "Correct. The Service follows pod readiness."
+
+  - id: ats105-final-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict a restore with a wrong secretKey"
+    source_readings:
+      - sections/section-030/module-01/course-01-what-to-back-up.md
+    prompt: "Harbor is restored with a new `secretKey`. What happens?"
+    options:
+      - id: a
+        text: "Harbor refuses to start."
+        explanation: "Not correct. It starts and shows its data."
+      - id: b
+        text: "Harbor reads the rows but cannot decrypt stored passwords, so replication to endpoints fails."
+        explanation: "Correct. The dump holds the passwords only in encrypted form."
+      - id: c
+        text: "Harbor generates new passwords for every endpoint."
+        explanation: "Not correct. It cannot recover the old ones."
+      - id: d
+        text: "Only the `admin` login stops working."
+        explanation: "Not correct. The problem is stored endpoint passwords."
+    correct_option: b
+    explanation: "Correct. The dump holds the passwords only in encrypted form."
+
+  - id: ats105-final-q08
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Order a restore"
+    source_readings:
+      - sections/section-030/module-01/course-02-a-restore-drill.md
+    prompt: "In which order does the drill restore Harbor?"
+    options:
+      - id: a
+        text: "`helm install` first, then the database dump."
+        explanation: "Not correct. The restore would collide with fresh tables."
+      - id: b
+        text: "Secrets first, then `helm install`, then storage."
+        explanation: "Not correct. Harbor would start on an empty database."
+      - id: c
+        text: "Database and storage first, then the Secrets, then `helm install`."
+        explanation: "Correct. Harbor starts on complete data."
+      - id: d
+        text: "Storage first, then `helm install`, then the Secrets."
+        explanation: "Not correct. Harbor needs the certificate and `secretKey` at start."
+    correct_option: c
+    explanation: "Correct. Harbor starts on complete data."
+
+  - id: ats105-final-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Prove a restore"
+    source_readings:
+      - sections/section-030/module-01/course-02-a-restore-drill.md
+    prompt: "Why does the drill pull the whole image and not just open the portal?"
+    options:
+      - id: a
+        text: "The portal cannot show restored projects."
+        explanation: "Not correct. It shows what the database holds."
+      - id: b
+        text: "A pull restores missing layers from Redis."
+        explanation: "Not correct. Redis holds no layers."
+      - id: c
+        text: "The portal always shows an old cache."
+        explanation: "Not correct. It reads the database."
+      - id: d
+        text: "The portal shows only the database; a full pull proves the storage holds every layer."
+        explanation: "Correct. The digest check proves the records, the pull proves the layers."
+    correct_option: d
+    explanation: "Correct. The digest check proves the records, the pull proves the layers."
+
+  - id: ats105-final-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain why rollback is unsupported"
+    source_readings:
+      - sections/section-040/module-01/course-01-upgrading-the-chart.md
+    prompt: "Why does the Harbor guide say `helm rollback` is not supported?"
+    options:
+      - id: a
+        text: "A newer Harbor can change the database schema, and the change only goes forward."
+        explanation: "Correct. Old pods would run on a schema they do not understand."
+      - id: b
+        text: "Helm keeps no history of the release."
+        explanation: "Not correct. Helm keeps a release history."
+      - id: c
+        text: "The old chart versions are deleted from the repository."
+        explanation: "Not correct. The old chart versions remain."
+      - id: d
+        text: "Rollback deletes the Secrets."
+        explanation: "Not correct. Rollback does not delete Secrets."
+    correct_option: a
+    explanation: "Correct. Old pods would run on a schema they do not understand."
+
+  - id: ats105-final-q11
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Check a streamed dump"
+    source_readings:
+      - sections/section-040/module-01/course-02-moving-the-database.md
+    prompt: "Why compare the file sizes with `wc -c` after copying the dump?"
+    options:
+      - id: a
+        text: "`wc -c` checks the dump for corrupt tables."
+        explanation: "Not correct. It only counts bytes."
+      - id: b
+        text: "`kubectl exec` can lose the end of a stream, and a short dump makes `pg_restore` fail."
+        explanation: "Correct. If the sizes differ, copy again."
+      - id: c
+        text: "`pg_restore` needs a file of a fixed size."
+        explanation: "Not correct. Size depends on the data."
+      - id: d
+        text: "The new server rejects dumps over a limit."
+        explanation: "Not correct. No such limit is set."
+    correct_option: b
+    explanation: "Correct. If the sizes differ, copy again."
+
+  - id: ats105-final-q12
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Free storage after deleting a repository"
+    source_readings:
+      - sections/section-040/module-01/course-03-garbage-collection.md
+    prompt: "What frees the storage of a deleted repository?"
+    options:
+      - id: a
+        text: "The delete itself, immediately."
+        explanation: "Not correct. The layers stay in the bucket."
+      - id: b
+        text: "Read-only mode."
+        explanation: "Not correct. It does not delete blobs."
+      - id: c
+        text: "A garbage collection run, which deletes blobs that no manifest references."
+        explanation: "Correct. Deleting only removes the records."
+      - id: d
+        text: "A restart of `registry`."
+        explanation: "Not correct. A restart does not run GC."
+    correct_option: c
+    explanation: "Correct. Deleting only removes the records."

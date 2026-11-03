@@ -1,0 +1,245 @@
+# Knowledge check for section 020. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats105-020
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-020
+  title: "High Availability"
+placement:
+  position: after
+  reading: sections/section-020/capstone/labs/lab-01/question.md
+questions:
+  - id: ats105-020-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "List what high availability needs"
+    source_readings:
+      - sections/section-020/module-01/course-01-what-high-availability-needs.md
+    prompt: "Which of these must exist before two `registry` replicas are useful?"
+    options:
+      - id: a
+        text: "A leader election setting in the chart."
+        explanation: "Not correct. The chart has no leader election."
+      - id: b
+        text: "Shared storage for layers, such as object storage or a `ReadWriteMany` volume."
+        explanation: "Correct. Every replica must read every layer."
+      - id: c
+        text: "A clustering flag in the `core` values."
+        explanation: "Not correct. Harbor has no clustering setting."
+      - id: d
+        text: "A second Harbor release with its own database."
+        explanation: "Not correct. Replicas share one set of state."
+    correct_option: b
+    explanation: "Correct. Every replica must read every layer."
+
+  - id: ats105-020-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Define ReadWriteMany"
+    source_readings:
+      - sections/section-020/module-01/course-01-what-high-availability-needs.md
+    prompt: "What is a `ReadWriteMany` volume?"
+    options:
+      - id: a
+        text: "A volume that many pods can mount only for reading."
+        explanation: "Not correct. That is `ReadOnlyMany`."
+      - id: b
+        text: "A volume that is copied to every node."
+        explanation: "Not correct. It is one volume, shared."
+      - id: c
+        text: "A volume that only one pod can mount for writing."
+        explanation: "Not correct. That is `ReadWriteOnce`."
+      - id: d
+        text: "A volume that pods on many nodes can mount for writing at the same time."
+        explanation: "Correct. Most block storage cannot do this."
+    correct_option: d
+    explanation: "Correct. Most block storage cannot do this."
+
+  - id: ats105-020-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain the failure of separate registry filesystems"
+    source_readings:
+      - sections/section-020/module-01/course-01-what-high-availability-needs.md
+    prompt: "Two `registry` replicas each use their own directory. Why do pulls fail at random?"
+    options:
+      - id: a
+        text: "The layers of one image can be split across both pods, and a pull fails when it reaches the pod without the layer."
+        explanation: "Correct. Upload requests land on different pods."
+      - id: b
+        text: "The replicas elect a leader that rejects reads."
+        explanation: "Not correct. There is no leader election."
+      - id: c
+        text: "PostgreSQL deletes the artifact records of the second pod."
+        explanation: "Not correct. The records are shared and stay."
+      - id: d
+        text: "Redis expires the layers after a short time."
+        explanation: "Not correct. Redis does not hold layers."
+    correct_option: a
+    explanation: "Correct. Upload requests land on different pods."
+
+  - id: ats105-020-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain job logs with several jobservice replicas"
+    source_readings:
+      - sections/section-020/module-01/course-01-what-high-availability-needs.md
+    prompt: "What goes wrong with two `jobservice` replicas and the `file` logger?"
+    options:
+      - id: a
+        text: "The same job runs twice."
+        explanation: "Not correct. Jobs come from one queue in Redis and run once."
+      - id: b
+        text: "The replicas cannot reach Redis."
+        explanation: "Not correct. The logger does not affect the connection to Redis."
+      - id: c
+        text: "Each replica keeps only its own logs, so the portal cannot show every job's log."
+        explanation: "Correct. The `database` logger fixes this."
+      - id: d
+        text: "`core` stops issuing tokens."
+        explanation: "Not correct. Tokens come from `core`, not from the logger."
+    correct_option: c
+    explanation: "Correct. The `database` logger fixes this."
+
+  - id: ats105-020-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know the replica values"
+    source_readings:
+      - sections/section-020/module-01/course-02-scaling-the-components.md
+    prompt: "Which Helm value sets the number of `registry` pods?"
+    options:
+      - id: a
+        text: "`registryctl.replicas`"
+        explanation: "Not correct. `registryctl` runs as a sidecar in the registry pod."
+      - id: b
+        text: "`nginx.replicas`"
+        explanation: "Not correct. That scales the proxy."
+      - id: c
+        text: "`persistence.replicas`"
+        explanation: "Not correct. Persistence settings do not set pod counts."
+      - id: d
+        text: "`registry.replicas`"
+        explanation: "Correct. The chart has one `replicas` value per component."
+    correct_option: d
+    explanation: "Correct. The chart has one `replicas` value per component."
+
+  - id: ats105-020-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Include the proxy in a high availability plan"
+    source_readings:
+      - sections/section-020/module-01/course-02-scaling-the-components.md
+    prompt: "Every request passes through the chart's `nginx` proxy. What follows?"
+    options:
+      - id: a
+        text: "The proxy is stateless, so one replica is enough."
+        explanation: "Not correct. Stateless does not mean always available."
+      - id: b
+        text: "One proxy replica is still a single point of failure, so scale it or use a highly available ingress."
+        explanation: "Correct. Requests must reach a live replica."
+      - id: c
+        text: "The proxy must run on the same node as `core`."
+        explanation: "Not correct. No such rule exists."
+      - id: d
+        text: "The proxy is replaced by `harbor-core` when it fails."
+        explanation: "Not correct. No component takes over the proxy."
+    correct_option: b
+    explanation: "Correct. Requests must reach a live replica."
+
+  - id: ats105-020-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Prove high availability"
+    source_readings:
+      - sections/section-020/module-01/course-02-scaling-the-components.md
+    prompt: "How do you prove that Harbor survives the loss of a pod?"
+    options:
+      - id: a
+        text: "Delete a `core` pod and a `registry` pod, then push and pull while they are missing."
+        explanation: "Correct. The test must break something."
+      - id: b
+        text: "Check that every Deployment shows `2/2`."
+        explanation: "Not correct. Ready pods do not prove shared state."
+      - id: c
+        text: "Wait for the replacement pods and then pull."
+        explanation: "Not correct. The test is requests during the outage."
+      - id: d
+        text: "Read `/api/v2.0/health` once."
+        explanation: "Not correct. Health does not test a request path through a missing pod."
+    correct_option: a
+    explanation: "Correct. The test must break something."
+
+  - id: ats105-020-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Scale through Helm values"
+    source_readings:
+      - sections/section-020/module-01/labs/lab-01/question.md
+    prompt: "Why does the lab forbid `kubectl scale` for the replica counts?"
+    options:
+      - id: a
+        text: "`kubectl scale` cannot change a Deployment."
+        explanation: "Not correct. It can, but Helm resets it."
+      - id: b
+        text: "`kubectl scale` deletes the Secrets."
+        explanation: "Not correct. It does not touch Secrets."
+      - id: c
+        text: "The next `helm upgrade` would set the counts back to the values."
+        explanation: "Correct. Helm owns the replica settings."
+      - id: d
+        text: "Helm refuses to start while a manual scale exists."
+        explanation: "Not correct. Helm does not refuse; it overwrites."
+    correct_option: c
+    explanation: "Correct. Helm owns the replica settings."
+
+  - id: ats105-020-q09
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know the state of the Harbor Operator"
+    source_readings:
+      - sections/section-020/module-01/course-01-what-high-availability-needs.md
+    prompt: "What does the course say about the Harbor Operator?"
+    options:
+      - id: a
+        text: "It is the recommended way to run Harbor in production."
+        explanation: "Not correct. It is archived."
+      - id: b
+        text: "It is required for more than one replica."
+        explanation: "Not correct. The chart scales through `replicas`."
+      - id: c
+        text: "It replaces PostgreSQL and Redis."
+        explanation: "Not correct. It only created Harbor and its dependencies."
+      - id: d
+        text: "Its repository is archived and gets no fixes, so use the `harbor-helm` chart."
+        explanation: "Correct. Its last release is from 2022."
+    correct_option: d
+    explanation: "Correct. Its last release is from 2022."
+
+  - id: ats105-020-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe Service behaviour during pod loss"
+    source_readings:
+      - sections/section-020/module-01/course-01-what-high-availability-needs.md
+    prompt: "A pod behind the Service `harbor` is deleted. What does Kubernetes do with traffic?"
+    options:
+      - id: a
+        text: "The Service sends requests only to ready pods, so it stops using the deleted pod within seconds."
+        explanation: "Correct. The Service follows pod readiness."
+      - id: b
+        text: "It keeps sending requests to the deleted pod until it is back."
+        explanation: "Not correct. Only ready pods get traffic."
+      - id: c
+        text: "It pauses all traffic until the replacement is ready."
+        explanation: "Not correct. Other ready pods keep serving."
+      - id: d
+        text: "It sends each request to every pod at once."
+        explanation: "Not correct. Each request goes to one pod."
+    correct_option: a
+    explanation: "Correct. The Service follows pod readiness."

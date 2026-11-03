@@ -1,0 +1,245 @@
+# Knowledge check for section 010. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats105-010
+course_id: ATS105
+exam_code: HARBOR
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-010
+  title: "Harbor On External Services"
+placement:
+  position: after
+  reading: sections/section-010/capstone/labs/lab-01/question.md
+questions:
+  - id: ats105-010-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name the components that write data"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-harbor-keeps-where.md
+    prompt: "Which Harbor component writes no data of its own?"
+    options:
+      - id: a
+        text: "`portal`, the web user interface."
+        explanation: "Correct. The portal only shows what the database says."
+      - id: b
+        text: "`core`, the API server."
+        explanation: "Not correct. `core` writes records to PostgreSQL and sessions to Redis."
+      - id: c
+        text: "`registry`, the image store."
+        explanation: "Not correct. `registry` writes layers and manifests to its storage."
+      - id: d
+        text: "`jobservice`, the job runner."
+        explanation: "Not correct. `jobservice` writes a job queue, job records and job logs."
+    correct_option: a
+    explanation: "Correct. The portal only shows what the database says."
+
+  - id: ats105-010-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Find where the registry keeps layers by default"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-harbor-keeps-where.md
+    prompt: "In the default Harbor of the playground, where do image layers live?"
+    options:
+      - id: a
+        text: "In the internal PostgreSQL database `registry`."
+        explanation: "Not correct. The database holds records and digests, not layers."
+      - id: b
+        text: "In the `harbor-redis` StatefulSet."
+        explanation: "Not correct. Redis holds queues and caches."
+      - id: c
+        text: "In the directory `/storage` on an `emptyDir` volume inside the registry pod."
+        explanation: "Correct. No PersistentVolumeClaim backs it, so the layers disappear with the pod."
+      - id: d
+        text: "In a PersistentVolumeClaim named `harbor-registry`."
+        explanation: "Not correct. The playground has no PersistentVolumeClaim for the registry."
+    correct_option: c
+    explanation: "Correct. No PersistentVolumeClaim backs it, so the layers disappear with the pod."
+
+  - id: ats105-010-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain what the database holds about images"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-harbor-keeps-where.md
+    prompt: "A team backs up only PostgreSQL. What does a restore from that backup miss?"
+    options:
+      - id: a
+        text: "The list of projects and users, because Redis holds them."
+        explanation: "Not correct. Projects and users are rows in PostgreSQL."
+      - id: b
+        text: "The image layers and manifests, because the database only holds their digests."
+        explanation: "Correct. Storage must be backed up and moved together with the database."
+      - id: c
+        text: "The Harbor code, because it is stored in the database."
+        explanation: "Not correct. The code is in the container images."
+      - id: d
+        text: "The artifact list, because it is stored in the registry storage."
+        explanation: "Not correct. The artifact list is in PostgreSQL tables."
+    correct_option: b
+    explanation: "Correct. Storage must be backed up and moved together with the database."
+
+  - id: ats105-010-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Apply the Redis database index rule"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-harbor-keeps-where.md
+    prompt: "Which Redis database index must `core` keep, according to the chart?"
+    options:
+      - id: a
+        text: "`1`"
+        explanation: "Not correct. Index `1` is the default for `jobservice`."
+      - id: b
+        text: "`2`"
+        explanation: "Not correct. Index `2` is the default for `registry`."
+      - id: c
+        text: "`5`"
+        explanation: "Not correct. Index `5` is the default for the Trivy adapter."
+      - id: d
+        text: "`0`"
+        explanation: "Correct. The chart defaults to `0` for `core` and says it must stay there."
+    correct_option: d
+    explanation: "Correct. The chart defaults to `0` for `core` and says it must stay there."
+
+  - id: ats105-010-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Configure the external database password"
+    source_readings:
+      - sections/section-010/module-01/course-02-external-postgresql-and-redis.md
+    prompt: "Which key name must the Secret named in `database.external.existingSecret` use for the password?"
+    options:
+      - id: a
+        text: "`DB_PASSWORD`"
+        explanation: "Not correct. The chart does not read that key."
+      - id: b
+        text: "`password`"
+        explanation: "Correct. The chart reads exactly that key name."
+      - id: c
+        text: "`POSTGRES_PASSWORD`"
+        explanation: "Not correct. That is a PostgreSQL image variable, not the chart key."
+      - id: d
+        text: "`REDIS_PASSWORD`"
+        explanation: "Not correct. That is the key for the Redis Secret."
+    correct_option: b
+    explanation: "Correct. The chart reads exactly that key name."
+
+  - id: ats105-010-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know which Redis modes Harbor supports"
+    source_readings:
+      - sections/section-010/module-01/course-02-external-postgresql-and-redis.md
+    prompt: "Which Redis setup does Harbor support?"
+    options:
+      - id: a
+        text: "Redis Cluster with sharded slots."
+        explanation: "Not correct. The Harbor guide says Redis Cluster is not supported."
+      - id: b
+        text: "Only Redis Sentinel; a single server is refused."
+        explanation: "Not correct. A single server is supported."
+      - id: c
+        text: "Redis Cluster, but only with TLS."
+        explanation: "Not correct. Redis Cluster is not supported with or without TLS."
+      - id: d
+        text: "One Redis server, or Redis Sentinel with `sentinelMasterSet`."
+        explanation: "Correct. Both are supported by the `redis.external` block."
+    correct_option: d
+    explanation: "Correct. Both are supported by the `redis.external` block."
+
+  - id: ats105-010-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Keep passwords out of Helm values"
+    source_readings:
+      - sections/section-010/module-01/course-02-external-postgresql-and-redis.md
+    prompt: "Why does the course use `existingSecret` and not `password` in the Helm values?"
+    options:
+      - id: a
+        text: "A password in the values ends up in Helm's release history, which anyone who reads Secrets in the namespace can decode."
+        explanation: "Correct. A Secret keeps the password out of the release record."
+      - id: b
+        text: "The chart ignores `password` when the database is external."
+        explanation: "Not correct. The chart accepts `password`; the problem is where it is stored."
+      - id: c
+        text: "`existingSecret` encrypts the password in PostgreSQL."
+        explanation: "Not correct. It only names a Secret to read the password from."
+      - id: d
+        text: "Helm refuses to upgrade a release that contains a password."
+        explanation: "Not correct. Helm does not check for passwords."
+    correct_option: a
+    explanation: "Correct. A Secret keeps the password out of the release record."
+
+  - id: ats105-010-q08
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Upgrade with the current values"
+    source_readings:
+      - sections/section-010/module-01/course-02-external-postgresql-and-redis.md
+    prompt: "What is the safe way to add the `database` and `redis` blocks to a running release?"
+    options:
+      - id: a
+        text: "Pass only the new blocks to `helm upgrade`."
+        explanation: "Not correct. The earlier settings, such as the TLS Secret, would be lost."
+      - id: b
+        text: "Edit the `harbor-core` ConfigMap by hand."
+        explanation: "Not correct. The next `helm upgrade` overwrites a manual edit."
+      - id: c
+        text: "Save `helm get values` to a file, add the blocks and pass the file to `helm upgrade`."
+        explanation: "Correct. A values file replaces what you passed before, so you keep every old setting."
+      - id: d
+        text: "Run `helm rollback` to the first revision and then add the blocks."
+        explanation: "Not correct. A rollback does not add settings."
+    correct_option: c
+    explanation: "Correct. A values file replaces what you passed before, so you keep every old setting."
+
+  - id: ats105-010-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Set up object storage for the registry"
+    source_readings:
+      - sections/section-010/module-01/course-03-object-storage-and-job-logs.md
+    prompt: "The S3 store is only reachable inside the cluster. Which setting does the course use so clients do not get redirected to it?"
+    options:
+      - id: a
+        text: "`s3.v4auth: false`"
+        explanation: "Not correct. That changes request signing, not redirects."
+      - id: b
+        text: "`s3.region: us-east-1`"
+        explanation: "Not correct. The region does not control redirects."
+      - id: c
+        text: "`expose.tls.enabled: false`"
+        explanation: "Not correct. TLS on the exposed Service is unrelated."
+      - id: d
+        text: "`persistence.imageChartStorage.disableredirect: true`"
+        explanation: "Correct. The registry then streams every layer itself."
+    correct_option: d
+    explanation: "Correct. The registry then streams every layer itself."
+
+  - id: ats105-010-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Place job logs in the database"
+    source_readings:
+      - sections/section-010/module-01/course-03-object-storage-and-job-logs.md
+    prompt: "Why does the guide say to set `jobservice.jobLoggers` to `database`?"
+    options:
+      - id: a
+        text: "It makes jobs run faster than the `file` logger."
+        explanation: "Not correct. The setting changes where logs go, not job speed."
+      - id: b
+        text: "Every `jobservice` replica and the portal then read the same logs."
+        explanation: "Correct. Files in pods are lost on restart and are different on each replica."
+      - id: c
+        text: "It moves the job queue from Redis to PostgreSQL."
+        explanation: "Not correct. The queue stays in Redis."
+      - id: d
+        text: "It is required to enable the S3 driver."
+        explanation: "Not correct. The S3 driver does not depend on it."
+    correct_option: b
+    explanation: "Correct. Files in pods are lost on restart and are different on each replica."
