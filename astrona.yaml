@@ -13,7 +13,7 @@
 training:
   id: ATS105
   title: "Harbor: Enterprise Operations, High Availability & Helm"
-  maturity: draft
+  maturity: alpha
   description: >
     Training material covering the Enterprise Operations, High Availability &
     Helm domain of the Harbor training path: running Harbor with the
