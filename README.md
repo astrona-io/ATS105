@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://astrona.io/courses/harbor">
+    <img src="https://astrona.io/courses/harbor/domains/ATS105.svg" alt="ATS105: Enterprise Operations, High Availability & Helm, part of the Harbor course on Astrona" width="100%">
+  </a>
+</p>
+
 # ATS105 — Enterprise Operations, High Availability & Helm (Harbor)
 
 Course material for the **Enterprise Operations, High Availability & Helm**
